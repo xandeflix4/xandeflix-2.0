@@ -8,6 +8,7 @@ interface FocusableButtonProps
   focusKey: string;
   children: ReactNode;
   onEnterPress?: () => void;
+  onArrowPress?: (direction: string) => boolean;
 }
 
 export function FocusableButton({
@@ -16,10 +17,19 @@ export function FocusableButton({
   className,
   onClick,
   onEnterPress,
+  onArrowPress,
   ...props
 }: FocusableButtonProps) {
   const { ref, focused } = useFocusable({
     focusKey,
+    onArrowPress,
+    onFocus: () => {
+      ref.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'nearest',
+      });
+    },
     onEnterPress: () => {
       if (onEnterPress) {
         onEnterPress();

@@ -1,0 +1,7 @@
+﻿
+05-03 15:51:20.065  7625  7625 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+05-03 15:51:20.962  7625  7625 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+
+

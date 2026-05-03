@@ -17,6 +17,10 @@ function detectDeviceType(): DeviceType {
 
   const userAgent = window.navigator.userAgent.toLowerCase();
   const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  // Debug log (will show in Logcat)
+  console.log('[DeviceDetection]', { userAgent, width, height });
 
   const isTvUserAgent =
     userAgent.includes('smart-tv') ||
@@ -26,9 +30,18 @@ function detectDeviceType(): DeviceType {
     userAgent.includes('netcast') ||
     userAgent.includes('appletv') ||
     userAgent.includes('android tv') ||
-    userAgent.includes('aft');
+    userAgent.includes('aft') ||
+    userAgent.includes('firetv') ||
+    userAgent.includes('hbbtv') ||
+    userAgent.includes('viera') ||
+    userAgent.includes('bravia');
 
-  if (isTvUserAgent || width >= 1280) {
+  // On Android TVs, logical width might be small, but they are TVs
+  if (isTvUserAgent) {
+    return 'tv';
+  }
+
+  if (width >= 1280 || (width >= 960 && height >= 540)) {
     return 'tv';
   }
 

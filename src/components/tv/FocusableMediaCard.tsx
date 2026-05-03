@@ -16,6 +16,13 @@ export function FocusableMediaCard({
   const { ref, focused } = useFocusable({
     focusKey,
     onEnterPress,
+    onFocus: () => {
+      ref.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest',
+      });
+    },
   });
 
   return (

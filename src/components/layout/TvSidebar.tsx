@@ -45,7 +45,7 @@ const menuItems = [
 
 export function TvSidebar() {
   return (
-    <aside className="fixed left-0 top-0 z-40 hidden h-screen w-24 flex-col items-center border-r border-white/5 bg-black/80 py-6 backdrop-blur md:flex">
+    <aside className="fixed left-0 top-0 z-40 flex h-screen w-24 flex-col items-center border-r border-white/5 bg-black/80 py-6 backdrop-blur">
       <div className="mb-10 flex size-12 items-center justify-center rounded-2xl bg-xf-red text-xl font-black text-white">
         X
       </div>

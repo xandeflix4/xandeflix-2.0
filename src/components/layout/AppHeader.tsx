@@ -1,7 +1,9 @@
-import { LogOut, Search, UserRound } from 'lucide-react';
+import { Search, UserRound, LogOut } from 'lucide-react';
+import { setFocus } from '@noriginmedia/norigin-spatial-navigation';
 
 import { FocusableButton } from '../tv/FocusableButton';
 import { FocusableSection } from '../tv/FocusableSection';
+import { useDeviceType } from '../../hooks/useDeviceType';
 
 interface AppHeaderProps {
   userEmail?: string;
@@ -9,6 +11,8 @@ interface AppHeaderProps {
 }
 
 export function AppHeader({ userEmail, onSignOut }: AppHeaderProps) {
+  const { isMobile } = useDeviceType();
+
   return (
     <header className="sticky top-0 z-30 flex h-20 items-center justify-between bg-gradient-to-b from-black via-xf-bg to-transparent px-4 md:px-8 lg:px-10">
       <div>
@@ -25,27 +29,38 @@ export function AppHeader({ userEmail, onSignOut }: AppHeaderProps) {
         focusKey="header-actions-section"
         className="flex items-center gap-3"
       >
-        <FocusableButton
-          focusKey="header-search-button"
-          className="hidden rounded-full bg-xf-surface-soft p-3 text-white md:inline-flex"
-          aria-label="Pesquisar"
-          onEnterPress={() => {
-            console.log('[D-Pad] Pesquisar');
-          }}
-        >
-          <Search size={22} />
-        </FocusableButton>
+        {!isMobile && (
+          <FocusableButton
+            focusKey="header-search-button"
+            className="rounded-full bg-xf-surface-soft p-3 text-white inline-flex"
+            aria-label="Pesquisar"
+            onEnterPress={() => {
+              console.log('[D-Pad] Pesquisar');
+            }}
+            onArrowPress={(direction) => {
+              if (direction === 'left') {
+                setFocus('sidebar-search');
+                return false;
+              }
+              return true;
+            }}
+          >
+            <Search size={22} />
+          </FocusableButton>
+        )}
 
-        <FocusableButton
-          focusKey="header-profile-button"
-          className="hidden rounded-full bg-xf-surface-soft p-3 text-white md:inline-flex"
-          aria-label="Perfil"
-          onEnterPress={() => {
-            console.log('[D-Pad] Perfil');
-          }}
-        >
-          <UserRound size={22} />
-        </FocusableButton>
+        {!isMobile && (
+          <FocusableButton
+            focusKey="header-profile-button"
+            className="rounded-full bg-xf-surface-soft p-3 text-white inline-flex"
+            aria-label="Perfil"
+            onEnterPress={() => {
+              console.log('[D-Pad] Perfil');
+            }}
+          >
+            <UserRound size={22} />
+          </FocusableButton>
+        )}
 
         <FocusableButton
           focusKey="header-logout-button"
@@ -54,7 +69,7 @@ export function AppHeader({ userEmail, onSignOut }: AppHeaderProps) {
           onClick={onSignOut}
         >
           <LogOut size={18} />
-          <span className="hidden sm:inline">Sair</span>
+          <span className={isMobile ? 'hidden' : 'inline'}>Sair</span>
         </FocusableButton>
       </FocusableSection>
     </header>

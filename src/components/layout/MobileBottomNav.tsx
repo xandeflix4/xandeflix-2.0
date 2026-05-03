@@ -30,7 +30,7 @@ export function MobileBottomNav() {
   return (
     <FocusableSection
       focusKey="mobile-bottom-nav-section"
-      className="fixed bottom-0 left-0 right-0 z-40 grid h-20 grid-cols-4 border-t border-white/10 bg-black/95 px-2 pb-2 pt-2 md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-40 grid h-20 grid-cols-4 border-t border-white/10 bg-black/95 px-2 pb-2 pt-2"
     >
       {mobileItems.map((item) => {
         const Icon = item.icon;

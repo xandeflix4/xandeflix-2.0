@@ -54,15 +54,17 @@ export function CatalogPage() {
             </h2>
           </div>
 
-          <FocusableButton
-            focusKey="continue-see-all"
-            className="hidden rounded-full bg-xf-surface px-5 py-3 text-sm font-bold text-white md:inline-flex"
-            onEnterPress={() => {
-              console.log('[D-Pad] Ver tudo: Continuar assistindo');
-            }}
-          >
-            Ver tudo
-          </FocusableButton>
+          {!isMobile && (
+            <FocusableButton
+              focusKey="continue-see-all"
+              className="rounded-full bg-xf-surface px-5 py-3 text-sm font-bold text-white inline-flex"
+              onEnterPress={() => {
+                console.log('[D-Pad] Ver tudo: Continuar assistindo');
+              }}
+            >
+              Ver tudo
+            </FocusableButton>
+          )}
         </div>
 
         <div className={`grid gap-4 md:gap-5 ${gridClassName}`}>

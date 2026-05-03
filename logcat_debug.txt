@@ -1,0 +1,384 @@
+﻿
+05-03 15:09:25.622  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cfromParentFocusKey background: #FF0; color: black; padding: 1px 5px; background: #333; color: 
+#BADA55; padding: 1px 5px; null
+05-03 15:09:25.623  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cthis.focusKey background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home
+05-03 15:09:25.624  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%ccurrentComponent background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home [object HTMLButtonElement] [object Object]
+05-03 15:09:25.625  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%ccurrentCutoffCoordinate background: #FF0; color: black; padding: 1px 5px; background: #333; color: 
+#BADA55; padding: 1px 5px; 0
+05-03 15:09:25.626  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%csiblings background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 
+1px 5px; 4 elements: mobile-home, mobile-search, mobile-channels, mobile-settings [object HTMLButtonElement],[object 
+HTMLButtonElement],[object HTMLButtonElement],[object HTMLButtonElement] [object Object],[object Object],[object 
+Object],[object Object]
+05-03 15:09:25.626  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-home relative to mobile-home is background: 
+#FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:25.627  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-home relative to mobile-home is background: #FF0; color: black; padding: 1px 5px; 
+background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:25.628  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-search relative to mobile-home is 
+background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:25.629  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-search relative to mobile-home is background: #FF0; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:25.630  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-channels relative to mobile-home is 
+background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:25.631  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-channels relative to mobile-home is background: #FF0; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:25.631  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-settings relative to mobile-home is 
+background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:25.632  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-settings relative to mobile-home is background: #FF0; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:25.632  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cnextComponent background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home [object HTMLButtonElement] [object Object]
+05-03 15:09:25.632  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetFocus%cfocusKey background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 
+5px; mobile-home
+05-03 15:09:25.633  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%cgetNextFocusKey%ctargetFocusKey background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home
+05-03 15:09:25.633  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetFocus%cnewFocusKey background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 
+1px 5px; mobile-home
+05-03 15:09:25.634  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetCurrentFocusedKey%conFocus background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; [object Object]
+05-03 15:09:25.634  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csaveLastFocusedChildKey%cmobile-bottom-nav-section lastFocusedChildKey set background: #FF0; color: black; padding: 
+1px 5px; background: #333; color: #BADA55; padding: 1px 5px; mobile-home
+05-03 15:09:25.635  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+05-03 15:09:25.881  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdirection background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; right
+05-03 15:09:25.882  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cfromParentFocusKey background: #F0F; color: black; padding: 1px 5px; background: #333; color: 
+#BADA55; padding: 1px 5px; null
+05-03 15:09:25.882  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cthis.focusKey background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home
+05-03 15:09:25.883  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%ccurrentComponent background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home [object HTMLButtonElement] [object Object]
+05-03 15:09:25.885  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%ccurrentCutoffCoordinate background: #F0F; color: black; padding: 1px 5px; background: #333; color: 
+#BADA55; padding: 1px 5px; 0
+05-03 15:09:25.886  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%csiblings background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 
+1px 5px; 4 elements: mobile-home, mobile-search, mobile-channels, mobile-settings [object HTMLButtonElement],[object 
+HTMLButtonElement],[object HTMLButtonElement],[object HTMLButtonElement] [object Object],[object Object],[object 
+Object],[object Object]
+05-03 15:09:25.887  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-home relative to mobile-home is background: 
+#F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:25.888  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-home relative to mobile-home is background: #F0F; color: black; padding: 1px 5px; 
+background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:25.888  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-search relative to mobile-home is 
+background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:25.889  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-search relative to mobile-home is background: #F0F; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:25.890  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-channels relative to mobile-home is 
+background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:25.890  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-channels relative to mobile-home is background: #F0F; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:25.891  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-settings relative to mobile-home is 
+background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:25.892  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-settings relative to mobile-home is background: #F0F; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:25.892  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cnextComponent background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home [object HTMLButtonElement] [object Object]
+05-03 15:09:25.893  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetFocus%cfocusKey background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 
+5px; mobile-home
+05-03 15:09:25.893  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%cgetNextFocusKey%ctargetFocusKey background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home
+05-03 15:09:25.894  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetFocus%cnewFocusKey background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 
+1px 5px; mobile-home
+05-03 15:09:25.894  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetCurrentFocusedKey%conFocus background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; [object Object]
+05-03 15:09:25.895  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csaveLastFocusedChildKey%cmobile-bottom-nav-section lastFocusedChildKey set background: #F0F; color: black; padding: 
+1px 5px; background: #333; color: #BADA55; padding: 1px 5px; mobile-home
+05-03 15:09:25.895  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+05-03 15:09:26.137  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdirection background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; up
+05-03 15:09:26.138  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cfromParentFocusKey background: #0FF; color: black; padding: 1px 5px; background: #333; color: 
+#BADA55; padding: 1px 5px; null
+05-03 15:09:26.138  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cthis.focusKey background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home
+05-03 15:09:26.139  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%ccurrentComponent background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home [object HTMLButtonElement] [object Object]
+05-03 15:09:26.140  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%ccurrentCutoffCoordinate background: #0FF; color: black; padding: 1px 5px; background: #333; color: 
+#BADA55; padding: 1px 5px; 0
+05-03 15:09:26.141  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%csiblings background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 
+1px 5px; 4 elements: mobile-home, mobile-search, mobile-channels, mobile-settings [object HTMLButtonElement],[object 
+HTMLButtonElement],[object HTMLButtonElement],[object HTMLButtonElement] [object Object],[object Object],[object 
+Object],[object Object]
+05-03 15:09:26.142  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-home relative to mobile-home is background: 
+#0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:26.143  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-home relative to mobile-home is background: #0FF; color: black; padding: 1px 5px; 
+background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:26.143  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-search relative to mobile-home is 
+background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:26.144  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-search relative to mobile-home is background: #0FF; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:26.145  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-channels relative to mobile-home is 
+background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:26.145  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-channels relative to mobile-home is background: #0FF; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:26.146  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-settings relative to mobile-home is 
+background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:26.147  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-settings relative to mobile-home is background: #0FF; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:26.147  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cnextComponent background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home [object HTMLButtonElement] [object Object]
+05-03 15:09:26.148  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetFocus%cfocusKey background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 
+5px; mobile-home
+05-03 15:09:26.148  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%cgetNextFocusKey%ctargetFocusKey background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home
+05-03 15:09:26.149  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetFocus%cnewFocusKey background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 
+1px 5px; mobile-home
+05-03 15:09:26.150  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetCurrentFocusedKey%conFocus background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; [object Object]
+05-03 15:09:26.151  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csaveLastFocusedChildKey%cmobile-bottom-nav-section lastFocusedChildKey set background: #0FF; color: black; padding: 
+1px 5px; background: #333; color: #BADA55; padding: 1px 5px; mobile-home
+05-03 15:09:26.152  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+05-03 15:09:26.378  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdirection background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; left
+05-03 15:09:26.380  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cfromParentFocusKey background: #FF0; color: black; padding: 1px 5px; background: #333; color: 
+#BADA55; padding: 1px 5px; null
+05-03 15:09:26.380  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cthis.focusKey background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home
+05-03 15:09:26.381  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%ccurrentComponent background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home [object HTMLButtonElement] [object Object]
+05-03 15:09:26.382  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%ccurrentCutoffCoordinate background: #FF0; color: black; padding: 1px 5px; background: #333; color: 
+#BADA55; padding: 1px 5px; 0
+05-03 15:09:26.383  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%csiblings background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 
+1px 5px; 4 elements: mobile-home, mobile-search, mobile-channels, mobile-settings [object HTMLButtonElement],[object 
+HTMLButtonElement],[object HTMLButtonElement],[object HTMLButtonElement] [object Object],[object Object],[object 
+Object],[object Object]
+05-03 15:09:26.383  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-home relative to mobile-home is background: 
+#FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:26.385  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-home relative to mobile-home is background: #FF0; color: black; padding: 1px 5px; 
+background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:26.385  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-search relative to mobile-home is 
+background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:26.386  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-search relative to mobile-home is background: #FF0; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:26.387  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-channels relative to mobile-home is 
+background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:26.388  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-channels relative to mobile-home is background: #FF0; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:26.389  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-settings relative to mobile-home is 
+background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:26.389  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-settings relative to mobile-home is background: #FF0; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:26.390  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cnextComponent background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home [object HTMLButtonElement] [object Object]
+05-03 15:09:26.391  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetFocus%cfocusKey background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 
+5px; mobile-home
+05-03 15:09:26.391  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%cgetNextFocusKey%ctargetFocusKey background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home
+05-03 15:09:26.391  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetFocus%cnewFocusKey background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 
+1px 5px; mobile-home
+05-03 15:09:26.392  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetCurrentFocusedKey%conFocus background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; [object Object]
+05-03 15:09:26.392  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csaveLastFocusedChildKey%cmobile-bottom-nav-section lastFocusedChildKey set background: #FF0; color: black; padding: 
+1px 5px; background: #333; color: #BADA55; padding: 1px 5px; mobile-home
+05-03 15:09:26.393  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+05-03 15:09:26.636  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdirection background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; down
+05-03 15:09:26.637  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cfromParentFocusKey background: #F0F; color: black; padding: 1px 5px; background: #333; color: 
+#BADA55; padding: 1px 5px; null
+05-03 15:09:26.638  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cthis.focusKey background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home
+05-03 15:09:26.639  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%ccurrentComponent background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home [object HTMLButtonElement] [object Object]
+05-03 15:09:26.640  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%ccurrentCutoffCoordinate background: #F0F; color: black; padding: 1px 5px; background: #333; color: 
+#BADA55; padding: 1px 5px; 0
+05-03 15:09:26.641  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%csiblings background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 
+1px 5px; 4 elements: mobile-home, mobile-search, mobile-channels, mobile-settings [object HTMLButtonElement],[object 
+HTMLButtonElement],[object HTMLButtonElement],[object HTMLButtonElement] [object Object],[object Object],[object 
+Object],[object Object]
+05-03 15:09:26.642  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-home relative to mobile-home is background: 
+#F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:26.642  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-home relative to mobile-home is background: #F0F; color: black; padding: 1px 5px; 
+background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:26.643  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-search relative to mobile-home is 
+background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:26.644  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-search relative to mobile-home is background: #F0F; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:26.644  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-channels relative to mobile-home is 
+background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:26.645  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-channels relative to mobile-home is background: #F0F; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:26.646  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-settings relative to mobile-home is 
+background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:26.646  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-settings relative to mobile-home is background: #F0F; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:26.647  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cnextComponent background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home [object HTMLButtonElement] [object Object]
+05-03 15:09:26.647  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetFocus%cfocusKey background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 
+5px; mobile-home
+05-03 15:09:26.647  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%cgetNextFocusKey%ctargetFocusKey background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home
+05-03 15:09:26.648  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetFocus%cnewFocusKey background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 
+1px 5px; mobile-home
+05-03 15:09:26.648  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetCurrentFocusedKey%conFocus background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; [object Object]
+05-03 15:09:26.649  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csaveLastFocusedChildKey%cmobile-bottom-nav-section lastFocusedChildKey set background: #F0F; color: black; padding: 
+1px 5px; background: #333; color: #BADA55; padding: 1px 5px; mobile-home
+05-03 15:09:26.650  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+05-03 15:09:26.938  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdirection background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; down
+05-03 15:09:26.938  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cfromParentFocusKey background: #0FF; color: black; padding: 1px 5px; background: #333; color: 
+#BADA55; padding: 1px 5px; null
+05-03 15:09:26.939  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cthis.focusKey background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home
+05-03 15:09:26.940  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%ccurrentComponent background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home [object HTMLButtonElement] [object Object]
+05-03 15:09:26.941  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%ccurrentCutoffCoordinate background: #0FF; color: black; padding: 1px 5px; background: #333; color: 
+#BADA55; padding: 1px 5px; 0
+05-03 15:09:26.942  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%csiblings background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 
+1px 5px; 4 elements: mobile-home, mobile-search, mobile-channels, mobile-settings [object HTMLButtonElement],[object 
+HTMLButtonElement],[object HTMLButtonElement],[object HTMLButtonElement] [object Object],[object Object],[object 
+Object],[object Object]
+05-03 15:09:26.942  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-home relative to mobile-home is background: 
+#0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:26.943  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-home relative to mobile-home is background: #0FF; color: black; padding: 1px 5px; 
+background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:26.944  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-search relative to mobile-home is 
+background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:26.944  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-search relative to mobile-home is background: #0FF; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:26.945  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-channels relative to mobile-home is 
+background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:26.946  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-channels relative to mobile-home is background: #0FF; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:26.947  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for mobile-settings relative to mobile-home is 
+background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 0 0 0
+05-03 15:09:26.947  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for mobile-settings relative to mobile-home is background: #0FF; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; 0.2
+05-03 15:09:26.948  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cnextComponent background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home [object HTMLButtonElement] [object Object]
+05-03 15:09:26.949  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetFocus%cfocusKey background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 
+5px; mobile-home
+05-03 15:09:26.950  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%cgetNextFocusKey%ctargetFocusKey background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; mobile-home
+05-03 15:09:26.951  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetFocus%cnewFocusKey background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 
+1px 5px; mobile-home
+05-03 15:09:26.952  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetCurrentFocusedKey%conFocus background: #0FF; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; [object Object]
+05-03 15:09:26.953  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csaveLastFocusedChildKey%cmobile-bottom-nav-section lastFocusedChildKey set background: #0FF; color: black; padding: 
+1px 5px; background: #333; color: #BADA55; padding: 1px 5px; mobile-home
+05-03 15:09:26.953  2953  2953 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+
+

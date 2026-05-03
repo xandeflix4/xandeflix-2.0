@@ -1,0 +1,235 @@
+﻿
+05-03 15:40:09.895   528  2418 I ActivityManager: Force stopping com.xandeflix.app appid=10216 user=0: from pid 6270
+05-03 15:40:09.896   528  2418 I ActivityManager: Killing 2953:com.xandeflix.app/u0a216 (adj 0): stop com.xandeflix.app
+05-03 15:40:09.904   528  2418 W ActivityManager: Force removing ActivityRecord{76cd1dc u0 
+com.xandeflix.app/.MainActivity t120}: app died, no saved state
+05-03 15:40:10.264  1728  1849 I RecentRefreshManager: ignoreList contains: com.xandeflix.app?:false
+05-03 15:40:10.264  1728  1849 I RecentRefreshManager: Recent App Package was: com.xandeflix.app
+05-03 15:40:10.421 11333  2852 I AmazonAppstore.Library/LibraryContentProvider: queryOnGraphCreate called with uri: 
+content://com.amazon.venezia.AppsLibraryContentProvider/apps/com.xandeflix.app
+05-03 15:40:10.462 11333  2852 I AmazonAppstore.Library/LibraryContentProvider: Querying single item: com.xandeflix.app
+05-03 15:40:10.462 11333  2852 I AmazonAppstore.Library/LibraryContentProvider: getSingleLibraryItemMetadata called 
+for id: com.xandeflix.app, giveOnlyApps: false
+05-03 15:40:10.614   528   730 I LaunchTimeProcessor: warm_app_warm_transition_launch_time of com.amazon.tv.launcher 
+is 627ms with activity = com.amazon.tv.launcher/.ui.HomeActivity_vNext, app_version = 728011210, prev_activity = 
+com.xandeflix.app/.MainActivity, isChild = false, context = S1T0A1D0I0L1E0M9999R80
+05-03 15:40:10.628   528   730 I LaunchTimeProcessor: warm_activity_launch_time of com.amazon.tv.launcher is 627ms 
+with activity = com.amazon.tv.launcher/.ui.HomeActivity_vNext, app_version = 728011210, prev_activity = 
+com.xandeflix.app/.MainActivity, isChild = false, context = S1T0A1D0I0L1E0M9999R80
+05-03 15:40:10.629   528   730 I LaunchTimeProcessor: warm_app_warm_transition_draw_time of com.amazon.tv.launcher is 
+628ms with activity = com.amazon.tv.launcher/.ui.HomeActivity_vNext, app_version = 728011210, prev_activity = 
+com.xandeflix.app/.MainActivity, isChild = false, context = S1T0A1D0I0L0E0M9999R80
+05-03 15:40:10.632   528   730 I LaunchTimeProcessor: warm_activity_draw_time of com.amazon.tv.launcher is 628ms with 
+activity = com.amazon.tv.launcher/.ui.HomeActivity_vNext, app_version = 728011210, prev_activity = 
+com.xandeflix.app/.MainActivity, isChild = false, context = S1T0A1D0I0L0E0M9999R80
+05-03 15:40:10.637  1728 13839 I RecentRefreshManager: update appStore cda card: 
+amzn1.actor.person.did.APUMVXDAH4KKS7ARBNZKLINWF22XTJYKGBIDQDJPLDMYSFRTICDK4OQ5GNXX5VAWJLZPBSEJ @@ library @@ recents 
+@@ com.xandeflix.app
+05-03 15:40:12.200  6277  6277 W Monkey  : args: [-p, com.xandeflix.app, -c, android.intent.category.LAUNCHER, 1]
+05-03 15:40:12.202  6277  6277 W Monkey  :  arg: "com.xandeflix.app"
+05-03 15:40:12.202  6277  6277 W Monkey  : data="com.xandeflix.app"
+05-03 15:40:12.284   528  4199 I ActivityManager: START u0 {act=android.intent.action.MAIN 
+cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.xandeflix.app/.MainActivity} from uid 2000
+05-03 15:40:12.388   528   547 I ActivityManager: Start proc 6419:com.xandeflix.app/u0a216 for activity 
+com.xandeflix.app/.MainActivity
+05-03 15:40:12.419  6419  6419 I chatty  : uid=10216(com.xandeflix.app) expire 587 lines
+05-03 15:40:14.215  6419  6456 I chatty  : uid=10216(com.xandeflix.app) expire 2 lines
+05-03 15:40:14.501  6419  6492 I chatty  : uid=10216(com.xandeflix.app) Chrome_ProcessL expire 2 lines
+05-03 15:40:14.523   528   547 I ActivityManager: Start proc 6494:com.amazon.webview.chromium:sandboxed_process0/u0i8 
+for webview_service com.xandeflix.app/org.chromium.content.app.SandboxedProcessService0
+05-03 15:40:14.650  6419  6511 I chatty  : uid=10216(com.xandeflix.app) ThreadPoolForeg expire 1 line
+05-03 15:40:15.236  6419  6517 I chatty  : uid=10216(com.xandeflix.app) AudioThread expire 2 lines
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at void 
+com.getcapacitor.Bridge.<init>(androidx.appcompat.app.AppCompatActivity, com.getcapacitor.ServerPath, 
+androidx.fragment.app.Fragment, android.webkit.WebView, java.util.List, java.util.List, 
+com.getcapacitor.cordova.MockCordovaInterfaceImpl, org.apache.cordova.PluginManager, 
+org.apache.cordova.CordovaPreferences, com.getcapacitor.CapConfig) (Bridge.java:233)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at void 
+com.getcapacitor.Bridge.<init>(androidx.appcompat.app.AppCompatActivity, com.getcapacitor.ServerPath, 
+androidx.fragment.app.Fragment, android.webkit.WebView, java.util.List, java.util.List, 
+com.getcapacitor.cordova.MockCordovaInterfaceImpl, org.apache.cordova.PluginManager, 
+org.apache.cordova.CordovaPreferences, com.getcapacitor.CapConfig, com.getcapacitor.Bridge-IA) (Bridge.java:-1)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at com.getcapacitor.Bridge com.getcapacitor.Bridge$Builder.create() 
+(Bridge.java:1599)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at void com.getcapacitor.BridgeActivity.load() 
+(BridgeActivity.java:48)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at void com.getcapacitor.BridgeActivity.onCreate(android.os.Bundle) 
+(BridgeActivity.java:42)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at void com.xandeflix.app.MainActivity.onCreate(android.os.Bundle) 
+(MainActivity.java:18)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at void android.app.Activity.performCreate(android.os.Bundle, 
+android.os.PersistableBundle) (Activity.java:7169)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at void android.app.Activity.performCreate(android.os.Bundle) 
+(Activity.java:7159)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at void 
+android.app.Instrumentation.callActivityOnCreate(android.app.Activity, android.os.Bundle) (Instrumentation.java:1271)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at android.app.Activity 
+android.app.ActivityThread.performLaunchActivity(android.app.ActivityThread$ActivityClientRecord, 
+android.content.Intent) (ActivityThread.java:2933)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at android.app.Activity 
+android.app.ActivityThread.handleLaunchActivity(android.app.ActivityThread$ActivityClientRecord, 
+android.app.servertransaction.PendingTransactionActions, android.content.Intent) (ActivityThread.java:3094)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at void 
+android.app.servertransaction.LaunchActivityItem.execute(android.app.ClientTransactionHandler, android.os.IBinder, 
+android.app.servertransaction.PendingTransactionActions) (LaunchActivityItem.java:78)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at void 
+android.app.servertransaction.TransactionExecutor.executeCallbacks(android.app.servertransaction.ClientTransaction) 
+(TransactionExecutor.java:108)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at void 
+android.app.servertransaction.TransactionExecutor.execute(android.app.servertransaction.ClientTransaction) 
+(TransactionExecutor.java:68)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at void 
+android.app.ActivityThread$H.handleMessage(android.os.Message) (ActivityThread.java:1839)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at void android.os.Handler.dispatchMessage(android.os.Message) 
+(Handler.java:106)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at void android.os.Looper.loop() (Looper.java:211)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at void android.app.ActivityThread.main(java.lang.String[]) 
+(ActivityThread.java:6777)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at java.lang.Object 
+java.lang.reflect.Method.invoke(java.lang.Object, java.lang.Object[]) (Method.java:-2)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at void 
+com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run() (RuntimeInit.java:493)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at void com.android.internal.os.ZygoteInit.main(java.lang.String[]) 
+(ZygoteInit.java:858)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap: Caused by: java.lang.ClassNotFoundException: Didn't find class 
+"androidx.window.extensions.core.util.function.Consumer" on path: DexPathList[[zip file 
+"/system/priv-app/MetricsApi/MetricsApi.apk", zip file 
+"/system/app/AmazonWebView/AmazonWebView.apk"],nativeLibraryDirectories=[/system/app/AmazonWebView/lib/arm, 
+/system/app/AmazonWebView/AmazonWebView.apk!/lib/armeabi-v7a, /system/lib, 
+/system/priv-app/MetricsApi/MetricsApi.apk!/lib/armeabi-v7a, /system/lib]]
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at java.lang.Class 
+dalvik.system.BaseDexClassLoader.findClass(java.lang.String) (BaseDexClassLoader.java:134)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at java.lang.Class 
+java.lang.ClassLoader.loadClass(java.lang.String, boolean) (ClassLoader.java:379)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at java.lang.Class 
+java.lang.ClassLoader.loadClass(java.lang.String) (ClassLoader.java:312)
+05-03 15:40:15.264  6419  6419 I m.xandeflix.ap:   at java.lang.Object J.N.OIIIIJJJOOOOOOOOOOZZZZZZ(int, int, int, 
+int, long, long, long, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, 
+java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean, boolean, boolean, 
+boolean, boolean, boolean) (chromium-AmazonWebView.apk-stable-@FileArg(gen/AMAZON_VERSION.json:code):-2)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at org.chromium.content_public.browser.NavigationHandle org.chromium
+.content.browser.framehost.NavigationControllerImpl.loadUrl(org.chromium.content_public.browser.LoadUrlParams) 
+(chromium-AmazonWebView.apk-stable-@FileArg(gen/AMAZON_VERSION.json:code):95)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void 
+org.chromium.android_webview.AwContents.loadUrl(org.chromium.content_public.browser.LoadUrlParams) 
+(chromium-AmazonWebView.apk-stable-@FileArg(gen/AMAZON_VERSION.json:code):55)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void 
+org.chromium.android_webview.AwContents.loadUrl(java.lang.String, java.util.Map) 
+(chromium-AmazonWebView.apk-stable-@FileArg(gen/AMAZON_VERSION.json:code):10)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void 
+com.android.webview.chromium.WebViewChromium.loadUrlNoPost(java.lang.String) 
+(chromium-AmazonWebView.apk-stable-@FileArg(gen/AMAZON_VERSION.json:code):6)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void 
+com.android.webview.chromium.WebViewChromium.loadUrl(java.lang.String) 
+(chromium-AmazonWebView.apk-stable-@FileArg(gen/AMAZON_VERSION.json:code):8)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void android.webkit.WebView.loadUrl(java.lang.String) 
+(WebView.java:970)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void com.getcapacitor.Bridge.loadWebView() (Bridge.java:324)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void 
+com.getcapacitor.Bridge.<init>(androidx.appcompat.app.AppCompatActivity, com.getcapacitor.ServerPath, 
+androidx.fragment.app.Fragment, android.webkit.WebView, java.util.List, java.util.List, 
+com.getcapacitor.cordova.MockCordovaInterfaceImpl, org.apache.cordova.PluginManager, 
+org.apache.cordova.CordovaPreferences, com.getcapacitor.CapConfig) (Bridge.java:233)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void 
+com.getcapacitor.Bridge.<init>(androidx.appcompat.app.AppCompatActivity, com.getcapacitor.ServerPath, 
+androidx.fragment.app.Fragment, android.webkit.WebView, java.util.List, java.util.List, 
+com.getcapacitor.cordova.MockCordovaInterfaceImpl, org.apache.cordova.PluginManager, 
+org.apache.cordova.CordovaPreferences, com.getcapacitor.CapConfig, com.getcapacitor.Bridge-IA) (Bridge.java:-1)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at com.getcapacitor.Bridge com.getcapacitor.Bridge$Builder.create() 
+(Bridge.java:1599)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void com.getcapacitor.BridgeActivity.load() 
+(BridgeActivity.java:48)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void com.getcapacitor.BridgeActivity.onCreate(android.os.Bundle) 
+(BridgeActivity.java:42)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void com.xandeflix.app.MainActivity.onCreate(android.os.Bundle) 
+(MainActivity.java:18)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void android.app.Activity.performCreate(android.os.Bundle, 
+android.os.PersistableBundle) (Activity.java:7169)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void android.app.Activity.performCreate(android.os.Bundle) 
+(Activity.java:7159)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void 
+android.app.Instrumentation.callActivityOnCreate(android.app.Activity, android.os.Bundle) (Instrumentation.java:1271)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at android.app.Activity 
+android.app.ActivityThread.performLaunchActivity(android.app.ActivityThread$ActivityClientRecord, 
+android.content.Intent) (ActivityThread.java:2933)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at android.app.Activity 
+android.app.ActivityThread.handleLaunchActivity(android.app.ActivityThread$ActivityClientRecord, 
+android.app.servertransaction.PendingTransactionActions, android.content.Intent) (ActivityThread.java:3094)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void 
+android.app.servertransaction.LaunchActivityItem.execute(android.app.ClientTransactionHandler, android.os.IBinder, 
+android.app.servertransaction.PendingTransactionActions) (LaunchActivityItem.java:78)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void 
+android.app.servertransaction.TransactionExecutor.executeCallbacks(android.app.servertransaction.ClientTransaction) 
+(TransactionExecutor.java:108)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void 
+android.app.servertransaction.TransactionExecutor.execute(android.app.servertransaction.ClientTransaction) 
+(TransactionExecutor.java:68)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void 
+android.app.ActivityThread$H.handleMessage(android.os.Message) (ActivityThread.java:1839)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void android.os.Handler.dispatchMessage(android.os.Message) 
+(Handler.java:106)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void android.os.Looper.loop() (Looper.java:211)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void android.app.ActivityThread.main(java.lang.String[]) 
+(ActivityThread.java:6777)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at java.lang.Object 
+java.lang.reflect.Method.invoke(java.lang.Object, java.lang.Object[]) (Method.java:-2)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void 
+com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run() (RuntimeInit.java:493)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap:   at void com.android.internal.os.ZygoteInit.main(java.lang.String[]) 
+(ZygoteInit.java:858)
+05-03 15:40:15.265  6419  6419 I m.xandeflix.ap: 
+05-03 15:40:15.557  6419  6419 W m.xandeflix.ap: Accessing hidden field 
+Landroid/view/WindowInsets;->CONSUMED:Landroid/view/WindowInsets; (light greylist, reflection)
+05-03 15:40:15.564  6419  6419 W m.xandeflix.ap: Accessing hidden method 
+Landroid/view/View;->getViewRootImpl()Landroid/view/ViewRootImpl; (light greylist, reflection)
+05-03 15:40:15.565  6419  6419 W m.xandeflix.ap: Accessing hidden field 
+Landroid/view/View$AttachInfo;->mVisibleInsets:Landroid/graphics/Rect; (light greylist, reflection)
+05-03 15:40:15.565  6419  6419 W m.xandeflix.ap: Accessing hidden field 
+Landroid/view/ViewRootImpl;->mAttachInfo:Landroid/view/View$AttachInfo; (light greylist, reflection)
+05-03 15:40:15.664  6419  6419 W m.xandeflix.ap: Accessing hidden method 
+Landroid/view/View;->transformMatrixToGlobal(Landroid/graphics/Matrix;)V (light greylist, linking)
+05-03 15:40:15.691 31034 31045 I AWVMetricsFramework.MEP: MetricEventProxyKdm: AWV metrics successfully recorded: AWV 
+- Recorded metric:GroupId=sa87zw8o, SchemaId=usaj/2/03880410, Program=AmazonWebView, 
+Operation=WebViewLoadEventCreated, Value=1.0, Units=count, Key=com.xandeflix.app, Metadata=A2Q3Y263D00KWC, 
+Dimensions=(key:version value:138.amazon-webview-v138-7204-tv.7204.244.167 61480832) , Annotations=
+05-03 15:40:16.027  6419  6419 W m.xandeflix.ap: Accessing hidden method 
+Landroid/os/Trace;->asyncTraceBegin(JLjava/lang/String;I)V (light greylist, reflection)
+05-03 15:40:16.027  6419  6419 W m.xandeflix.ap: Accessing hidden method 
+Landroid/os/Trace;->asyncTraceEnd(JLjava/lang/String;I)V (light greylist, reflection)
+05-03 15:40:16.027  6419  6419 W m.xandeflix.ap: Accessing hidden method 
+Landroid/os/Trace;->traceCounter(JLjava/lang/String;I)V (light greylist, reflection)
+05-03 15:40:16.035   528   553 I ActivityManager: Displayed com.xandeflix.app/.MainActivity: +3s615ms (total +3s315ms)
+05-03 15:40:16.074   528   730 I LaunchTimeProcessor: cool_app_launch_time of com.xandeflix.app is 3742ms with 
+activity = com.xandeflix.app/.MainActivity, app_version = 1, prev_activity = 
+com.amazon.tv.launcher/.ui.HomeActivity_vNext, isChild = false, context = S1T0A1D0I0L1E0M9999R15
+05-03 15:40:16.106   528   730 I LaunchTimeProcessor: cool_activity_launch_time of com.xandeflix.app is 3414ms with 
+activity = com.xandeflix.app/.MainActivity, app_version = 1, prev_activity = 
+com.amazon.tv.launcher/.ui.HomeActivity_vNext, isChild = false, context = S1T0A1D0I0L1E0M9999R15
+05-03 15:40:16.193  6419  6524 I chatty  : uid=10216(com.xandeflix.app) ThreadPoolSingl identical 5 lines
+05-03 15:40:16.325  6419  6512 I chatty  : uid=10216(com.xandeflix.app) ThreadPoolForeg expire 1 line
+05-03 15:40:16.599  6419  6511 I chatty  : uid=10216(com.xandeflix.app) ThreadPoolForeg expire 1 line
+05-03 15:40:16.856  6419  6567 I chatty  : uid=10216(com.xandeflix.app) RenderThread expire 2 lines
+05-03 15:40:16.924  6419  6419 I chatty  : uid=10216(com.xandeflix.app) expire 285 lines
+05-03 15:40:26.957  6419  6419 I chatty  : uid=10216(com.xandeflix.app) expire 398 lines
+05-03 15:40:35.491  6419  6419 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+05-03 15:40:36.173  6419  6419 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+05-03 15:40:36.373  6419  6419 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+05-03 15:40:36.624  6419  6419 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+05-03 15:40:36.873  6419  6419 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+05-03 15:40:37.151  6419  6419 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+05-03 15:40:37.470  6419  6419 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+05-03 15:40:37.806  6419  6419 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+05-03 15:40:38.429  6419  6419 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+05-03 15:40:44.331  6419  6419 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+
+

@@ -1,0 +1,97 @@
+﻿
+05-03 16:10:55.777 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdirection background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; right
+05-03 16:10:55.779 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cfromParentFocusKey background: #FF0; color: black; padding: 1px 5px; background: #333; color: 
+#BADA55; padding: 1px 5px; null
+05-03 16:10:55.780 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cthis.focusKey background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; hero-play-button
+05-03 16:10:55.782 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%ccurrentComponent background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; hero-play-button [object HTMLButtonElement] [object Object]
+05-03 16:10:55.783 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%ccurrentCutoffCoordinate background: #FF0; color: black; padding: 1px 5px; background: #333; color: 
+#BADA55; padding: 1px 5px; 363
+05-03 16:10:55.785 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%csiblings background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 
+1px 5px; 1 elements: hero-info-button [object HTMLButtonElement] [object Object]
+05-03 16:10:55.786 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for hero-info-button relative to hero-play-button is 
+background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 12 0 60
+05-03 16:10:55.788 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for hero-info-button relative to hero-play-button is background: #FF0; color: black; 
+padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 12.2
+05-03 16:10:55.790 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cnextComponent background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; hero-info-button [object HTMLButtonElement] [object Object]
+05-03 16:10:55.792 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetFocus%cfocusKey background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 
+5px; hero-info-button
+05-03 16:10:55.793 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%cgetNextFocusKey%ctargetFocusKey background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; hero-info-button
+05-03 16:10:55.795 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetFocus%cnewFocusKey background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 
+1px 5px; hero-info-button
+05-03 16:10:55.796 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetCurrentFocusedKey%conBlur background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; [object Object]
+05-03 16:10:55.798 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetCurrentFocusedKey%conFocus background: #FF0; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; [object Object]
+05-03 16:10:55.800 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csaveLastFocusedChildKey%ccatalog-hero-section lastFocusedChildKey set background: #FF0; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; hero-info-button
+05-03 16:10:55.801 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+05-03 16:10:56.692 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdirection background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; left
+05-03 16:10:56.693 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cfromParentFocusKey background: #F0F; color: black; padding: 1px 5px; background: #333; color: 
+#BADA55; padding: 1px 5px; null
+05-03 16:10:56.695 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cthis.focusKey background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; hero-info-button
+05-03 16:10:56.696 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%ccurrentComponent background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; hero-info-button [object HTMLButtonElement] [object Object]
+05-03 16:10:56.698 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%ccurrentCutoffCoordinate background: #F0F; color: black; padding: 1px 5px; background: #333; color: 
+#BADA55; padding: 1px 5px; 375
+05-03 16:10:56.699 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%csiblings background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 
+1px 5px; 1 elements: hero-play-button [object HTMLButtonElement] [object Object]
+05-03 16:10:56.701 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cdistance (primary, secondary, total weighted) for hero-play-button relative to hero-info-button is 
+background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 12 0 60
+05-03 16:10:56.703 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cpriority for hero-play-button relative to hero-info-button is background: #F0F; color: black; 
+padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 5px; 12.2
+05-03 16:10:56.704 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csmartNavigate%cnextComponent background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; hero-play-button [object HTMLButtonElement] [object Object]
+05-03 16:10:56.706 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetFocus%cfocusKey background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 1px 
+5px; hero-play-button
+05-03 16:10:56.707 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%cgetNextFocusKey%ctargetFocusKey background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; hero-play-button
+05-03 16:10:56.709 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetFocus%cnewFocusKey background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; padding: 
+1px 5px; hero-play-button
+05-03 16:10:56.710 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetCurrentFocusedKey%conBlur background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; [object Object]
+05-03 16:10:56.712 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csetCurrentFocusedKey%conFocus background: #F0F; color: black; padding: 1px 5px; background: #333; color: #BADA55; 
+padding: 1px 5px; [object Object]
+05-03 16:10:56.713 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+%csaveLastFocusedChildKey%ccatalog-hero-section lastFocusedChildKey set background: #F0F; color: black; padding: 1px 
+5px; background: #333; color: #BADA55; padding: 1px 5px; hero-play-button
+05-03 16:10:56.715 10079 10079 I Capacitor/Console: File: http://localhost/assets/index-DwaEVYHF.js - Line 34 - Msg: 
+[Xandeflix KeyDown] [object Object]
+
+
