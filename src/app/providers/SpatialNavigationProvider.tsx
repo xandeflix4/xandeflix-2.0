@@ -1,26 +1,19 @@
-import React, { createContext, useContext, useEffect } from 'react'
+import { useEffect, type ReactNode } from 'react';
+import { init } from '@noriginmedia/norigin-spatial-navigation';
 
-interface SpatialNavigationContextType {
-  // Add spatial navigation methods here
+interface SpatialNavigationProviderProps {
+  children: ReactNode;
 }
 
-const SpatialNavigationContext = createContext<SpatialNavigationContextType | undefined>(undefined)
-
-export const SpatialNavigationProvider = ({ children }: { children: React.ReactNode }) => {
+export function SpatialNavigationProvider({
+  children,
+}: SpatialNavigationProviderProps) {
   useEffect(() => {
-    // Initialize spatial navigation library here
-    console.log('Spatial Navigation Initialized')
-  }, [])
+    init({
+      debug: false,
+      visualDebug: false,
+    });
+  }, []);
 
-  return (
-    <SpatialNavigationContext.Provider value={{}}>
-      {children}
-    </SpatialNavigationContext.Provider>
-  )
-}
-
-export const useSpatialNavigation = () => {
-  const context = useContext(SpatialNavigationContext)
-  if (!context) throw new Error('useSpatialNavigation must be used within SpatialNavigationProvider')
-  return context
+  return children;
 }

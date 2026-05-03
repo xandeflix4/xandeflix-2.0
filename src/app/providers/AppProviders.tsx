@@ -1,17 +1,16 @@
-import React from 'react'
-import { AuthProvider } from './AuthProvider'
-import { SpatialNavigationProvider } from './SpatialNavigationProvider'
+import type { ReactNode } from 'react';
+
+import { AuthProvider } from './AuthProvider';
+import { SpatialNavigationProvider } from './SpatialNavigationProvider';
 
 interface AppProvidersProps {
-  children: React.ReactNode
+  children: ReactNode;
 }
 
-export const AppProviders = ({ children }: AppProvidersProps) => {
+export function AppProviders({ children }: AppProvidersProps) {
   return (
     <SpatialNavigationProvider>
-      <AuthProvider>
-        {children}
-      </AuthProvider>
+      <AuthProvider>{children}</AuthProvider>
     </SpatialNavigationProvider>
-  )
+  );
 }
