@@ -1,6 +1,7 @@
 import { setFocus } from '@noriginmedia/norigin-spatial-navigation';
 
 import { FOCUS_KEYS, getMediaCardFocusKey } from './focusKeys';
+import { getCategoryItemFocusKey } from './categoryFocusKeys';
 
 export const HERO_SCROLL_OPTIONS: ScrollIntoViewOptions = {
   behavior: 'smooth',
@@ -20,6 +21,8 @@ export const NEAREST_SCROLL_OPTIONS: ScrollIntoViewOptions = {
   inline: 'nearest',
 };
 
+const FIRE_TV_FOCUS_RETRY_DELAYS = [0, 80, 180, 320] as const;
+
 function canUseDom() {
   return typeof window !== 'undefined' && typeof document !== 'undefined';
 }
@@ -32,12 +35,20 @@ export function getElementByFocusKey(focusKey: string): HTMLElement | null {
   return document.querySelector<HTMLElement>(`[data-nav-id="${focusKey}"]`);
 }
 
+export function focusKeyExists(focusKey: string) {
+  return Boolean(getElementByFocusKey(focusKey));
+}
+
 export function scrollFocusKeyIntoView(
   focusKey: string,
   options: ScrollIntoViewOptions = CARD_SCROLL_OPTIONS,
 ) {
   const element = getElementByFocusKey(focusKey);
   element?.scrollIntoView(options);
+}
+
+function getFirstExistingFocusKey(focusKeys: string[]) {
+  return focusKeys.find((focusKey) => focusKeyExists(focusKey)) ?? focusKeys[0];
 }
 
 export function setFocusAndScroll({
@@ -60,6 +71,59 @@ export function setFocusAndScroll({
   });
 
   return false;
+}
+
+function forceWindowTop() {
+  if (!canUseDom()) {
+    return;
+  }
+
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: 'smooth',
+  });
+}
+
+function setFocusWithFireTvRetry(focusKey: string) {
+  setFocus(focusKey);
+
+  if (!canUseDom()) {
+    return false;
+  }
+
+  window.requestAnimationFrame(() => {
+    setFocus(focusKey);
+  });
+
+  FIRE_TV_FOCUS_RETRY_DELAYS.forEach((delay) => {
+    window.setTimeout(() => {
+      setFocus(focusKey);
+      scrollFocusKeyIntoView(focusKey, NEAREST_SCROLL_OPTIONS);
+    }, delay);
+  });
+
+  return false;
+}
+
+export function focusHeaderWithFallback(focusKeys: string[]) {
+  const targetFocusKey = getFirstExistingFocusKey(focusKeys);
+
+  console.log('[Xandeflix ManualNav] Focus header with fallback', {
+    targetFocusKey,
+    candidates: focusKeys,
+  });
+
+  forceWindowTop();
+
+  window.requestAnimationFrame(() => {
+    scrollFocusKeyIntoView(
+      FOCUS_KEYS.HEADER_ACTIONS_SECTION,
+      NEAREST_SCROLL_OPTIONS,
+    );
+  });
+
+  return setFocusWithFireTvRetry(targetFocusKey);
 }
 
 export function focusHeroPlayButton() {
@@ -94,61 +158,44 @@ export function focusMediaCardByIndex(index: number) {
   });
 }
 
+export function focusCategoryItem({
+  categoryId,
+  itemIndex,
+}: {
+  categoryId: string;
+  itemIndex: number;
+}) {
+  const focusKey = getCategoryItemFocusKey(categoryId, itemIndex);
+
+  return setFocusAndScroll({
+    focusKey,
+    scrollOptions: CARD_SCROLL_OPTIONS,
+  });
+}
+
 export function focusHeaderSearchButton() {
-  setFocus(FOCUS_KEYS.HEADER_SEARCH_BUTTON);
-  return false;
+  return focusHeaderWithFallback([
+    FOCUS_KEYS.HEADER_SEARCH_BUTTON,
+    FOCUS_KEYS.HEADER_LOGOUT_BUTTON,
+  ]);
 }
 
 export function focusHeaderProfileButton() {
-  setFocus(FOCUS_KEYS.HEADER_PROFILE_BUTTON);
-  return false;
+  return focusHeaderWithFallback([
+    FOCUS_KEYS.HEADER_PROFILE_BUTTON,
+    FOCUS_KEYS.HEADER_LOGOUT_BUTTON,
+  ]);
+}
+
+export function focusHeaderLogoutButton() {
+  return focusHeaderWithFallback([
+    FOCUS_KEYS.HEADER_LOGOUT_BUTTON,
+    FOCUS_KEYS.HEADER_PROFILE_BUTTON,
+    FOCUS_KEYS.HEADER_SEARCH_BUTTON,
+  ]);
 }
 
 export function focusSidebarSearch() {
   setFocus(FOCUS_KEYS.SIDEBAR_SEARCH);
   return false;
-}
-
-export function focusContinueWatchingCardAbove({
-  liveChannelIndex,
-  columnsPerRow,
-  continueWatchingItemsLength,
-}: {
-  liveChannelIndex: number;
-  columnsPerRow: number;
-  continueWatchingItemsLength: number;
-}) {
-  const continueRows = Math.ceil(continueWatchingItemsLength / columnsPerRow);
-  const lastContinueRowStartIndex = (continueRows - 1) * columnsPerRow;
-  const columnIndex = liveChannelIndex % columnsPerRow;
-
-  const targetIndex = Math.min(
-    lastContinueRowStartIndex + columnIndex,
-    continueWatchingItemsLength - 1,
-  );
-
-  console.log('[Xandeflix ManualNav] LiveChannels ArrowUp', {
-    liveChannelIndex,
-    columnsPerRow,
-    continueWatchingItemsLength,
-    targetIndex,
-    targetFocusKey: getMediaCardFocusKey(targetIndex),
-  });
-
-  return focusMediaCardByIndex(targetIndex);
-}
-
-export function focusLastContinueWatchingRow({
-  columnsPerRow,
-  continueWatchingItemsLength,
-}: {
-  columnsPerRow: number;
-  continueWatchingItemsLength: number;
-}) {
-  const fallbackTargetIndex = Math.max(
-    continueWatchingItemsLength - columnsPerRow,
-    0,
-  );
-
-  return focusMediaCardByIndex(fallbackTargetIndex);
 }

@@ -4,6 +4,7 @@ interface MediaCardProps {
   title: string;
   subtitle?: string;
   index: number;
+  focusKey?: string;
   onEnterPress?: () => void;
   onArrowPress?: (direction: string) => boolean;
 }
@@ -12,6 +13,7 @@ export function MediaCard({
   title,
   subtitle,
   index,
+  focusKey,
   onEnterPress,
   onArrowPress,
 }: MediaCardProps) {
@@ -19,7 +21,7 @@ export function MediaCard({
     <FocusableMediaCard
       title={title}
       subtitle={subtitle}
-      focusKey={`media-card-${index + 1}`}
+      focusKey={focusKey ?? `media-card-${index + 1}`}
       onEnterPress={onEnterPress}
       onArrowPress={onArrowPress}
     />

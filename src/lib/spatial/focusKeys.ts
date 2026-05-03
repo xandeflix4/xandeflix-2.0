@@ -14,12 +14,12 @@ export const FOCUS_KEYS = {
   HERO_PLAY_BUTTON: 'hero-play-button',
   HERO_INFO_BUTTON: 'hero-info-button',
 
-  CONTINUE_WATCHING_SECTION: 'continue-watching-section',
-  CONTINUE_SEE_ALL: 'continue-see-all',
+  CONTINUE_WATCHING_SECTION: 'catalog-section-continue-watching',
+  CONTINUE_SEE_ALL: 'catalog-section-continue-watching-see-all',
 
-  LIVE_CHANNELS_SECTION: 'live-channels-section',
+  LIVE_CHANNELS_SECTION: 'catalog-section-live-channels',
 
-  FIRST_MEDIA_CARD: 'media-card-1',
+  FIRST_MEDIA_CARD: 'catalog-section-continue-watching-item-0',
 
   SIDEBAR_SECTION: 'sidebar-section',
   SIDEBAR_HOME: 'sidebar-home',

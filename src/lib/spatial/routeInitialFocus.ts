@@ -1,9 +1,13 @@
-import { FOCUS_KEYS, type FocusKey } from './focusKeys';
+import { FOCUS_KEYS } from './focusKeys';
+import {
+  getCategoryItemFocusKey,
+  getCategorySeeAllFocusKey,
+} from './categoryFocusKeys';
 
 export interface RouteInitialFocusConfig {
   routeName: string;
-  initialFocusKey: FocusKey;
-  fallbackFocusKeys: FocusKey[];
+  initialFocusKey: string;
+  fallbackFocusKeys: string[];
 }
 
 const LOGIN_INITIAL_FOCUS: RouteInitialFocusConfig = {
@@ -21,7 +25,8 @@ const CATALOG_INITIAL_FOCUS: RouteInitialFocusConfig = {
   initialFocusKey: FOCUS_KEYS.HERO_PLAY_BUTTON,
   fallbackFocusKeys: [
     FOCUS_KEYS.HERO_INFO_BUTTON,
-    FOCUS_KEYS.CONTINUE_SEE_ALL,
+    getCategoryItemFocusKey('continue-watching', 0),
+    getCategorySeeAllFocusKey('continue-watching'),
     FOCUS_KEYS.SIDEBAR_HOME,
     FOCUS_KEYS.MOBILE_HOME,
   ],
