@@ -1,7 +1,13 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import type {
+  ButtonHTMLAttributes,
+  MouseEvent,
+  ReactNode,
+} from 'react';
 import { useFocusable } from '@noriginmedia/norigin-spatial-navigation';
 
 import { cn } from '../../utils/cn';
+
+type FocusScrollTarget = 'self' | 'closest-section' | string;
 
 interface FocusableButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -9,6 +15,35 @@ interface FocusableButtonProps
   children: ReactNode;
   onEnterPress?: () => void;
   onArrowPress?: (direction: string) => boolean;
+  focusScrollTarget?: FocusScrollTarget;
+  focusScrollOptions?: ScrollIntoViewOptions;
+}
+
+const DEFAULT_SCROLL_OPTIONS: ScrollIntoViewOptions = {
+  behavior: 'smooth',
+  block: 'nearest',
+  inline: 'nearest',
+};
+
+function resolveScrollTarget(
+  element: HTMLElement | null,
+  focusScrollTarget: FocusScrollTarget,
+): HTMLElement | null {
+  if (!element) {
+    return null;
+  }
+
+  if (focusScrollTarget === 'self') {
+    return element;
+  }
+
+  if (focusScrollTarget === 'closest-section') {
+    const section = element.closest('section');
+    return section instanceof HTMLElement ? section : element;
+  }
+
+  const customTarget = document.querySelector<HTMLElement>(focusScrollTarget);
+  return customTarget ?? element;
 }
 
 export function FocusableButton({
@@ -18,17 +53,20 @@ export function FocusableButton({
   onClick,
   onEnterPress,
   onArrowPress,
+  focusScrollTarget = 'self',
+  focusScrollOptions = DEFAULT_SCROLL_OPTIONS,
   ...props
 }: FocusableButtonProps) {
   const { ref, focused } = useFocusable({
     focusKey,
     onArrowPress,
     onFocus: () => {
-      ref.current?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-        inline: 'nearest',
-      });
+      const scrollTarget = resolveScrollTarget(
+        ref.current,
+        focusScrollTarget,
+      );
+
+      scrollTarget?.scrollIntoView(focusScrollOptions);
     },
     onEnterPress: () => {
       if (onEnterPress) {
@@ -40,7 +78,7 @@ export function FocusableButton({
         const virtualEvent = {
           preventDefault: () => undefined,
           stopPropagation: () => undefined,
-        } as React.MouseEvent<HTMLButtonElement>;
+        } as MouseEvent<HTMLButtonElement>;
 
         onClick(virtualEvent);
       }

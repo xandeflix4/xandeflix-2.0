@@ -4,6 +4,7 @@ import { setFocus } from '@noriginmedia/norigin-spatial-navigation';
 import { FocusableButton } from '../tv/FocusableButton';
 import { FocusableSection } from '../tv/FocusableSection';
 import { useDeviceType } from '../../hooks/useDeviceType';
+import { FOCUS_KEYS } from '../../lib/spatial/focusKeys';
 
 interface AppHeaderProps {
   userEmail?: string;
@@ -12,6 +13,16 @@ interface AppHeaderProps {
 
 export function AppHeader({ userEmail, onSignOut }: AppHeaderProps) {
   const { isMobile } = useDeviceType();
+
+  function focusHeroPlayButton() {
+    setFocus(FOCUS_KEYS.HERO_PLAY_BUTTON);
+    return false;
+  }
+
+  function focusHeroInfoButton() {
+    setFocus(FOCUS_KEYS.HERO_INFO_BUTTON);
+    return false;
+  }
 
   return (
     <header className="sticky top-0 z-30 flex h-20 items-center justify-between bg-gradient-to-b from-black via-xf-bg to-transparent px-4 md:px-8 lg:px-10">
@@ -26,22 +37,27 @@ export function AppHeader({ userEmail, onSignOut }: AppHeaderProps) {
       </div>
 
       <FocusableSection
-        focusKey="header-actions-section"
+        focusKey={FOCUS_KEYS.HEADER_ACTIONS_SECTION}
         className="flex items-center gap-3"
       >
         {!isMobile && (
           <FocusableButton
-            focusKey="header-search-button"
-            className="rounded-full bg-xf-surface-soft p-3 text-white inline-flex"
+            focusKey={FOCUS_KEYS.HEADER_SEARCH_BUTTON}
+            className="inline-flex rounded-full bg-xf-surface-soft p-3 text-white"
             aria-label="Pesquisar"
             onEnterPress={() => {
               console.log('[D-Pad] Pesquisar');
             }}
             onArrowPress={(direction) => {
               if (direction === 'left') {
-                setFocus('sidebar-search');
+                setFocus(FOCUS_KEYS.SIDEBAR_SEARCH);
                 return false;
               }
+
+              if (direction === 'down') {
+                return focusHeroPlayButton();
+              }
+
               return true;
             }}
           >
@@ -51,11 +67,18 @@ export function AppHeader({ userEmail, onSignOut }: AppHeaderProps) {
 
         {!isMobile && (
           <FocusableButton
-            focusKey="header-profile-button"
-            className="rounded-full bg-xf-surface-soft p-3 text-white inline-flex"
+            focusKey={FOCUS_KEYS.HEADER_PROFILE_BUTTON}
+            className="inline-flex rounded-full bg-xf-surface-soft p-3 text-white"
             aria-label="Perfil"
             onEnterPress={() => {
               console.log('[D-Pad] Perfil');
+            }}
+            onArrowPress={(direction) => {
+              if (direction === 'down') {
+                return focusHeroInfoButton();
+              }
+
+              return true;
             }}
           >
             <UserRound size={22} />
@@ -63,10 +86,17 @@ export function AppHeader({ userEmail, onSignOut }: AppHeaderProps) {
         )}
 
         <FocusableButton
-          focusKey="header-logout-button"
+          focusKey={FOCUS_KEYS.HEADER_LOGOUT_BUTTON}
           className="inline-flex items-center gap-2 rounded-full bg-xf-red px-4 py-3 text-sm font-bold text-white"
           onEnterPress={onSignOut}
           onClick={onSignOut}
+          onArrowPress={(direction) => {
+            if (direction === 'down') {
+              return focusHeroInfoButton();
+            }
+
+            return true;
+          }}
         >
           <LogOut size={18} />
           <span className={isMobile ? 'hidden' : 'inline'}>Sair</span>

@@ -1,22 +1,71 @@
 import { useEffect, type ReactNode } from 'react';
 import {
+  getCurrentFocusKey,
   init,
   setKeyMap,
-  setFocus,
-  getCurrentFocusKey,
 } from '@noriginmedia/norigin-spatial-navigation';
-
-import { useDeviceType } from '../../hooks/useDeviceType';
 
 interface SpatialNavigationProviderProps {
   children: ReactNode;
 }
 
+const SPATIAL_KEY_NAMES = new Set([
+  'ArrowLeft',
+  'ArrowUp',
+  'ArrowRight',
+  'ArrowDown',
+  'Enter',
+]);
+
+const SPATIAL_KEY_CODES = new Set([
+  13, // Enter
+  19, // Android DPAD_UP
+  20, // Android DPAD_DOWN
+  21, // Android DPAD_LEFT
+  22, // Android DPAD_RIGHT
+  23, // Android DPAD_CENTER
+  37, // ArrowLeft
+  38, // ArrowUp
+  39, // ArrowRight
+  40, // ArrowDown
+  66, // Android Enter
+]);
+
+function isSpatialNavigationKey(event: KeyboardEvent): boolean {
+  return (
+    SPATIAL_KEY_NAMES.has(event.key) ||
+    SPATIAL_KEY_CODES.has(event.keyCode) ||
+    SPATIAL_KEY_CODES.has(event.which)
+  );
+}
+
+function isEditableElement(element: Element | null): boolean {
+  if (!(element instanceof HTMLElement)) {
+    return false;
+  }
+
+  return (
+    element.tagName === 'INPUT' ||
+    element.tagName === 'TEXTAREA' ||
+    element.isContentEditable
+  );
+}
+
+function blurNativeFocusedButtonIfNeeded() {
+  const activeElement = document.activeElement;
+
+  if (
+    activeElement instanceof HTMLElement &&
+    !isEditableElement(activeElement) &&
+    activeElement.dataset.navId
+  ) {
+    activeElement.blur();
+  }
+}
+
 export function SpatialNavigationProvider({
   children,
 }: SpatialNavigationProviderProps) {
-  const { isTv } = useDeviceType();
-
   useEffect(() => {
     init({
       debug: true,
@@ -34,29 +83,40 @@ export function SpatialNavigationProvider({
       enter: [13, 23, 66],
     });
 
-    // Ensure initial focus
-    const timer = setTimeout(() => {
-      const currentFocus = getCurrentFocusKey();
-      console.log('[Xandeflix Focus] Current focus on boot:', currentFocus || 'NONE');
-      if (!currentFocus) {
-        const initialFocus = isTv ? 'sidebar-home' : 'mobile-home';
-        console.log('[Xandeflix Focus] Setting initial focus to:', initialFocus);
-        setFocus(initialFocus);
-      }
-    }, 1500);
+    console.log('[Xandeflix Spatial] Norigin initialized');
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      const currentFocus = getCurrentFocusKey();
-      console.log(`[Xandeflix KeyDown] Key: ${event.key} | Current Focus: ${currentFocus || 'NONE'} | Target: ${(event.target as HTMLElement)?.tagName}`);
+      if (!isSpatialNavigationKey(event)) {
+        return;
+      }
+
+      const activeElement = document.activeElement;
+      const currentFocusKey = getCurrentFocusKey();
+
+      if (!isEditableElement(activeElement)) {
+        event.preventDefault();
+        blurNativeFocusedButtonIfNeeded();
+      }
+
+      console.log('[Xandeflix KeyDown]', {
+        key: event.key,
+        keyCode: event.keyCode,
+        which: event.which,
+        currentFocusKey: currentFocusKey || 'NONE',
+        activeElement: activeElement?.tagName || 'NONE',
+        activeNavId:
+          activeElement instanceof HTMLElement
+            ? activeElement.dataset.navId || 'NONE'
+            : 'NONE',
+      });
     };
 
     window.addEventListener('keydown', handleKeyDown, true);
 
     return () => {
-      clearTimeout(timer);
       window.removeEventListener('keydown', handleKeyDown, true);
     };
-  }, [isTv]);
+  }, []);
 
   return children;
 }

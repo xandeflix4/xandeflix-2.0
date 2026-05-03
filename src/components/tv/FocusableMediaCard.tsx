@@ -5,6 +5,7 @@ interface FocusableMediaCardProps {
   subtitle?: string;
   focusKey: string;
   onEnterPress?: () => void;
+  onArrowPress?: (direction: string) => boolean;
 }
 
 export function FocusableMediaCard({
@@ -12,10 +13,12 @@ export function FocusableMediaCard({
   subtitle,
   focusKey,
   onEnterPress,
+  onArrowPress,
 }: FocusableMediaCardProps) {
   const { ref, focused } = useFocusable({
     focusKey,
     onEnterPress,
+    onArrowPress,
     onFocus: () => {
       ref.current?.scrollIntoView({
         behavior: 'smooth',

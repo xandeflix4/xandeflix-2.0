@@ -9,6 +9,8 @@ interface FocusableSectionProps {
   children: ReactNode;
   autoFocus?: boolean;
   className?: string;
+  onArrowPress?: (direction: string) => boolean;
+  focusScrollOptions?: ScrollIntoViewOptions;
 }
 
 export function FocusableSection({
@@ -16,10 +18,20 @@ export function FocusableSection({
   children,
   autoFocus = false,
   className,
+  onArrowPress,
+  focusScrollOptions,
 }: FocusableSectionProps) {
   const { ref, focusSelf } = useFocusable({
     focusKey,
     trackChildren: true,
+    onArrowPress,
+    onFocus: () => {
+      if (!focusScrollOptions) {
+        return;
+      }
+
+      ref.current?.scrollIntoView(focusScrollOptions);
+    },
   });
 
   useEffect(() => {
@@ -38,7 +50,7 @@ export function FocusableSection({
 
   return (
     <FocusContext.Provider value={focusKey}>
-      <section ref={ref} className={className}>
+      <section ref={ref} className={className} data-nav-id={focusKey}>
         {children}
       </section>
     </FocusContext.Provider>

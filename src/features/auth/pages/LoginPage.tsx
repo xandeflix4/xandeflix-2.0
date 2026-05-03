@@ -6,6 +6,8 @@ import { useAuth } from '../../../app/providers/AuthProvider';
 import { FocusableButton } from '../../../components/tv/FocusableButton';
 import { FocusableInput } from '../../../components/tv/FocusableInput';
 import { FocusableSection } from '../../../components/tv/FocusableSection';
+import { useRouteInitialFocus } from '../../../hooks/useRouteInitialFocus';
+import { FOCUS_KEYS } from '../../../lib/spatial/focusKeys';
 
 const TEST_EMAIL = 'teste@xandeflix.com';
 const TEST_PASSWORD = '12345678';
@@ -16,6 +18,8 @@ export function LoginPage() {
   const [email, setEmail] = useState(TEST_EMAIL);
   const [password, setPassword] = useState(TEST_PASSWORD);
   const [feedback, setFeedback] = useState<string | null>(null);
+
+  useRouteInitialFocus();
 
   if (isAuthenticated) {
     return <Navigate to="/" replace />;
@@ -45,8 +49,7 @@ export function LoginPage() {
   return (
     <main className="xf-app flex min-h-screen items-center justify-center px-6">
       <FocusableSection
-        focusKey="login-section"
-        autoFocus
+        focusKey={FOCUS_KEYS.LOGIN_SECTION}
         className="w-full max-w-md rounded-2xl bg-xf-surface p-8"
       >
         <div className="mb-8 flex items-center gap-3">
@@ -64,7 +67,7 @@ export function LoginPage() {
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <FocusableInput
-            focusKey="login-email-input"
+            focusKey={FOCUS_KEYS.LOGIN_EMAIL_INPUT}
             label="E-mail"
             type="email"
             autoComplete="email"
@@ -74,7 +77,7 @@ export function LoginPage() {
           />
 
           <FocusableInput
-            focusKey="login-password-input"
+            focusKey={FOCUS_KEYS.LOGIN_PASSWORD_INPUT}
             label="Senha"
             type="password"
             autoComplete="current-password"
@@ -90,7 +93,7 @@ export function LoginPage() {
           )}
 
           <FocusableButton
-            focusKey="login-submit-button"
+            focusKey={FOCUS_KEYS.LOGIN_SUBMIT_BUTTON}
             className="w-full rounded-lg bg-xf-red px-6 py-4 text-lg font-bold text-white disabled:opacity-60"
             disabled={isLoading}
             onEnterPress={() => {
@@ -104,7 +107,7 @@ export function LoginPage() {
           </FocusableButton>
 
           <FocusableButton
-            focusKey="login-test-button"
+            focusKey={FOCUS_KEYS.LOGIN_TEST_BUTTON}
             className="w-full rounded-lg bg-white/10 px-6 py-4 text-base font-bold text-white disabled:opacity-60"
             disabled={isLoading}
             onEnterPress={() => {
