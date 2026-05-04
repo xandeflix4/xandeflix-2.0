@@ -31,15 +31,14 @@ export function FocusableMediaCard({
   return (
     <button
       ref={ref}
-      className="media-card tv-focusable group relative aspect-[2/3] overflow-hidden p-4 text-left"
+      className="media-card tv-focusable relative aspect-[2/3] overflow-hidden rounded-2xl bg-xf-surface-soft p-4 text-left"
       type="button"
       data-focused={focused ? 'true' : undefined}
       data-nav-id={focusKey}
       onClick={onEnterPress}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-xf-surface-soft via-xf-surface to-black" />
-
-      <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black via-black/80 to-transparent p-4">
+      
+      <div className="absolute inset-x-0 bottom-0 z-10 bg-black/75 p-4">
         <p className="line-clamp-2 text-base font-black text-white md:text-lg">
           {title}
         </p>
