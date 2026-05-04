@@ -21,7 +21,7 @@ export function FocusableSection({
   onArrowPress,
   focusScrollOptions,
 }: FocusableSectionProps) {
-  const { ref, focusSelf } = useFocusable({
+  const { ref, focusSelf, focused, hasFocusedChild } = useFocusable({
     focusKey,
     trackChildren: true,
     onArrowPress,
@@ -50,7 +50,13 @@ export function FocusableSection({
 
   return (
     <FocusContext.Provider value={focusKey}>
-      <section ref={ref} className={className} data-nav-id={focusKey}>
+      <section
+        ref={ref}
+        className={className}
+        data-nav-id={focusKey}
+        data-focused={focused ? 'true' : undefined}
+        data-has-focused-child={hasFocusedChild ? 'true' : undefined}
+      >
         {children}
       </section>
     </FocusContext.Provider>
