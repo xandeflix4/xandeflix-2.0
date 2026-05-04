@@ -4,7 +4,7 @@ import { FOCUS_KEYS, getMediaCardFocusKey } from './focusKeys';
 import { getCategoryItemFocusKey } from './categoryFocusKeys';
 
 export const HERO_SCROLL_OPTIONS: ScrollIntoViewOptions = {
-  behavior: 'smooth',
+  behavior: 'auto',
   block: 'start',
   inline: 'nearest',
 };

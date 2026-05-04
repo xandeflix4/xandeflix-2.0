@@ -114,18 +114,21 @@ export function useRouteInitialFocus() {
         const currentFocusStillExists =
           isCurrentFocusStillMounted(currentFocusKey);
 
-        if (isFocusKeyRouteCandidate(currentFocusKey, candidates)) {
-          focusConfirmed = true;
+          if (
+            currentFocusStillExists &&
+            isFocusKeyRouteCandidate(currentFocusKey, candidates)
+          ) {
+            focusConfirmed = true;
 
-          spatialDebug('route-focus', 'Focus already valid', {
-            pathname,
-            routeName,
-            currentFocusKey,
-            currentFocusStillExists,
-          });
+            spatialDebug('route-focus', 'Focus already valid', {
+              pathname,
+              routeName,
+              currentFocusKey,
+              currentFocusStillExists,
+            });
 
-          return;
-        }
+            return;
+          }
 
         const targetFocusKey =
           getFirstAvailableFocusKey(candidates) ?? candidates[0] ?? null;

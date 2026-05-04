@@ -21,7 +21,7 @@ export function FocusableMediaCard({
     onArrowPress,
     onFocus: () => {
       ref.current?.scrollIntoView({
-        behavior: 'smooth',
+        behavior: 'auto',
         block: 'center',
         inline: 'nearest',
       });
