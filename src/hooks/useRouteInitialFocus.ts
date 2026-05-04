@@ -37,7 +37,6 @@ function getRouteInitialFocusConfig(pathname: string): RouteInitialFocusConfig {
         'hero-play-button',
         'hero-info-button',
         'catalog-section-continue-watching-item-0',
-        'catalog-section-continue-watching-see-all',
         'sidebar-home',
         'mobile-home',
       ],

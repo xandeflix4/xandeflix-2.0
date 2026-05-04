@@ -15,7 +15,7 @@ export const FOCUS_KEYS = {
   HERO_INFO_BUTTON: 'hero-info-button',
 
   CONTINUE_WATCHING_SECTION: 'catalog-section-continue-watching',
-  CONTINUE_SEE_ALL: 'catalog-section-continue-watching-see-all',
+  
 
   LIVE_CHANNELS_SECTION: 'catalog-section-live-channels',
 

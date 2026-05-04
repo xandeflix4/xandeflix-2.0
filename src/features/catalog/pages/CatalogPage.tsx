@@ -108,7 +108,7 @@ const visibleCatalogSections = useMemo(
                 </h2>
               </div>
 
-              {section.showSeeAll && !isMobile && (
+              {section.showSeeAll && !isMobile && !isTv && (
                 <FocusableButton
                   focusKey={getCategorySeeAllFocusKey(section.id)}
                   className="inline-flex rounded-full bg-xf-surface px-5 py-3 text-sm font-bold text-white"
