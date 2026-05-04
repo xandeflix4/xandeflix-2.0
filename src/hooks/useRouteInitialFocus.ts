@@ -4,108 +4,187 @@ import {
   getCurrentFocusKey,
   setFocus,
 } from '@noriginmedia/norigin-spatial-navigation';
-import { spatialDebug } from '@/lib/spatial/spatialDebug';
-import { ROUTE_FOCUS_RETRY_DELAYS_MS } from '../lib/spatial/focusKeys';
-import { getRouteInitialFocus } from '../lib/spatial/routeInitialFocus';
 
-const ENABLE_FOCUS_LOGS = true;
+import { spatialDebug } from '@/lib/spatial/spatialDebug';
+
+type RouteName = 'login' | 'catalog' | 'unknown';
+
+type RouteInitialFocusConfig = {
+  routeName: RouteName;
+  candidates: string[];
+};
+
+const RETRY_DELAYS = [0, 100, 200, 350, 700, 1200];
+const VERIFY_FOCUS_DELAY = 50;
+
+function getRouteInitialFocusConfig(pathname: string): RouteInitialFocusConfig {
+  if (pathname === '/login') {
+    return {
+      routeName: 'login',
+      candidates: [
+        'login-test-button',
+        'login-submit-button',
+        'login-email-input',
+        'login-password-input',
+      ],
+    };
+  }
+
+  if (pathname === '/') {
+    return {
+      routeName: 'catalog',
+      candidates: [
+        'hero-play-button',
+        'hero-info-button',
+        'catalog-section-continue-watching-item-0',
+        'catalog-section-continue-watching-see-all',
+        'sidebar-home',
+        'mobile-home',
+      ],
+    };
+  }
+
+  return {
+    routeName: 'unknown',
+    candidates: [],
+  };
+}
 
 function getFocusableElement(focusKey: string): HTMLElement | null {
-  if (typeof document === 'undefined') {
-    return null;
+  return document.querySelector<HTMLElement>(`[data-focus-key="${focusKey}"]`);
+}
+
+function getFirstAvailableFocusKey(candidates: string[]): string | null {
+  for (const candidate of candidates) {
+    const element = getFocusableElement(candidate);
+
+    if (element) {
+      return candidate;
+    }
   }
 
-  return document.querySelector<HTMLElement>(`[data-nav-id="${focusKey}"]`);
+  return null;
 }
 
-function focusKeyExistsInDom(focusKey: string): boolean {
-  return Boolean(getFocusableElement(focusKey));
+function isCurrentFocusStillMounted(
+  currentFocusKey: string | null | undefined,
+): boolean {
+  if (!currentFocusKey) return false;
+
+  return Boolean(getFocusableElement(currentFocusKey));
 }
 
-function scrollFocusedElementIntoView(focusKey: string) {
-  const element = getFocusableElement(focusKey);
+function isFocusKeyRouteCandidate(
+  focusKey: string | null | undefined,
+  candidates: string[],
+): focusKey is string {
+  if (!focusKey) return false;
 
-  element?.scrollIntoView({
-    behavior: 'smooth',
-    block: 'nearest',
-    inline: 'nearest',
-  });
-}
-
-function logFocus(message: string, payload?: unknown) {
-  if (!ENABLE_FOCUS_LOGS) {
-    return;
-  }
-
-  spatialDebug('route-focus', message, payload ?? '');
+  return candidates.includes(focusKey);
 }
 
 export function useRouteInitialFocus() {
-  const { pathname } = useLocation();
+  const location = useLocation();
 
   useEffect(() => {
-    const routeFocus = getRouteInitialFocus(pathname);
+    const pathname = location.pathname;
+    const { routeName, candidates } = getRouteInitialFocusConfig(pathname);
 
-    const candidates = [
-      routeFocus.initialFocusKey,
-      ...routeFocus.fallbackFocusKeys,
-    ];
-
-    let cancelled = false;
-    const timers: number[] = [];
-
-    function trySetRouteFocus(attempt: number) {
-      if (cancelled) {
-        return;
-      }
-
-      const currentFocusKey = getCurrentFocusKey();
-      const currentFocusStillExists = currentFocusKey
-        ? focusKeyExistsInDom(currentFocusKey)
-        : false;
-
-      const targetFocusKey = candidates.find((candidate) =>
-        focusKeyExistsInDom(candidate),
-      );
-
-      logFocus(`Attempt ${attempt}`, {
+    if (candidates.length === 0) {
+      spatialDebug('route-focus', 'No route initial focus config', {
         pathname,
-        routeName: routeFocus.routeName,
-        currentFocusKey: currentFocusKey || 'NONE',
-        currentFocusStillExists,
-        targetFocusKey: targetFocusKey || 'NOT_FOUND',
-        candidates,
+        routeName,
       });
 
-      if (!targetFocusKey) {
-        return;
-      }
-
-      setFocus(targetFocusKey);
-      scrollFocusedElementIntoView(targetFocusKey);
-
-      logFocus('Focus applied', {
-        pathname,
-        targetFocusKey,
-      });
+      return;
     }
 
-    const animationFrameId = window.requestAnimationFrame(() => {
-      trySetRouteFocus(0);
+    let cancelled = false;
+    let focusConfirmed = false;
 
-      ROUTE_FOCUS_RETRY_DELAYS_MS.forEach((delay, index) => {
-        const timer = window.setTimeout(() => {
-          trySetRouteFocus(index + 1);
-        }, delay);
+    const timeoutIds: number[] = [];
+    const verificationTimeoutIds: number[] = [];
 
-        timers.push(timer);
-      });
+    RETRY_DELAYS.forEach((delay, attempt) => {
+      const timeoutId = window.setTimeout(() => {
+        if (cancelled) return;
+        if (focusConfirmed) return;
+
+        const currentFocusKey = getCurrentFocusKey();
+        const currentFocusStillExists =
+          isCurrentFocusStillMounted(currentFocusKey);
+
+        if (isFocusKeyRouteCandidate(currentFocusKey, candidates)) {
+          focusConfirmed = true;
+
+          spatialDebug('route-focus', 'Focus already valid', {
+            pathname,
+            routeName,
+            currentFocusKey,
+            currentFocusStillExists,
+          });
+
+          return;
+        }
+
+        const targetFocusKey =
+          getFirstAvailableFocusKey(candidates) ?? candidates[0] ?? null;
+
+        spatialDebug('route-focus', `Attempt ${attempt}`, {
+          pathname,
+          routeName,
+          currentFocusKey: currentFocusKey ?? 'NONE',
+          currentFocusStillExists,
+          targetFocusKey: targetFocusKey ?? 'NONE',
+          candidates,
+        });
+
+        if (!targetFocusKey) return;
+
+        setFocus(targetFocusKey);
+
+        const verificationTimeoutId = window.setTimeout(() => {
+          if (cancelled) return;
+          if (focusConfirmed) return;
+
+          const confirmedFocusKey = getCurrentFocusKey();
+          const confirmed = confirmedFocusKey === targetFocusKey;
+
+          if (confirmed) {
+            focusConfirmed = true;
+
+            spatialDebug('route-focus', 'Focus confirmed', {
+              pathname,
+              targetFocusKey,
+              confirmedFocusKey,
+            });
+
+            return;
+          }
+
+          spatialDebug('route-focus', 'Focus not confirmed yet', {
+            pathname,
+            targetFocusKey,
+            confirmedFocusKey: confirmedFocusKey ?? 'NONE',
+          });
+        }, VERIFY_FOCUS_DELAY);
+
+        verificationTimeoutIds.push(verificationTimeoutId);
+      }, delay);
+
+      timeoutIds.push(timeoutId);
     });
 
     return () => {
       cancelled = true;
-      window.cancelAnimationFrame(animationFrameId);
-      timers.forEach((timer) => window.clearTimeout(timer));
+
+      timeoutIds.forEach((timeoutId) => {
+        window.clearTimeout(timeoutId);
+      });
+
+      verificationTimeoutIds.forEach((timeoutId) => {
+        window.clearTimeout(timeoutId);
+      });
     };
-  }, [pathname]);
+  }, [location.pathname]);
 }
