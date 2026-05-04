@@ -18,6 +18,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 
 const INITIAL_TV_VISIBLE_SECTIONS = 1;
+const INITIAL_TV_VISIBLE_ITEMS_PER_SECTION = 5;
 const TV_REMAINING_SECTIONS_DELAY_MS = 900;
 
 export function CatalogPage() {
@@ -76,6 +77,12 @@ const visibleCatalogSections = useMemo(
       />
 
       {visibleCatalogSections.map((section, categoryIndex) => {
+        const sectionItems =
+          isTv &&
+          visibleSectionCount < catalogSections.length &&
+          categoryIndex === 0
+            ? section.items.slice(0, INITIAL_TV_VISIBLE_ITEMS_PER_SECTION)
+            : section.items;
         const eyebrow =
           section.id === 'continue-watching'
             ? isMobile
@@ -128,7 +135,7 @@ const visibleCatalogSections = useMemo(
             </div>
 
             <div className={`grid gap-4 md:gap-5 ${gridClassName}`}>
-              {section.items.map((item, itemIndex) => (
+              {sectionItems.map((item, itemIndex) => (
                 <MediaCard
                   key={item.id}
                   title={item.title}
