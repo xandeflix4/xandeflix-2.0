@@ -1,5 +1,5 @@
 export const ENABLE_SPATIAL_DEBUG =
-  import.meta.env.DEV && import.meta.env.VITE_SPATIAL_DEBUG === 'true';
+  import.meta.env.VITE_SPATIAL_DEBUG === 'true';
 
 type DebugScope =
   | 'provider'
@@ -12,20 +12,47 @@ type DebugScope =
   | 'fire-tv'
   | 'unknown';
 
+function formatSpatialLogArg(arg: unknown): unknown {
+  if (arg === null) return null;
+
+  if (typeof arg === 'object') {
+    try {
+      return JSON.stringify(arg);
+    } catch {
+      return '[Unserializable Object]';
+    }
+  }
+
+  return arg;
+}
+
+function formatSpatialLogArgs(args: unknown[]) {
+  return args.map(formatSpatialLogArg);
+}
+
 export function spatialDebug(scope: DebugScope, ...args: unknown[]) {
   if (!ENABLE_SPATIAL_DEBUG) return;
 
-  console.log(`[XANDEFLIX:SPATIAL:${scope}]`, ...args);
+  console.log(
+    `[XANDEFLIX:SPATIAL:${scope}]`,
+    ...formatSpatialLogArgs(args),
+  );
 }
 
 export function spatialWarn(scope: DebugScope, ...args: unknown[]) {
   if (!ENABLE_SPATIAL_DEBUG) return;
 
-  console.warn(`[XANDEFLIX:SPATIAL:${scope}]`, ...args);
+  console.warn(
+    `[XANDEFLIX:SPATIAL:${scope}]`,
+    ...formatSpatialLogArgs(args),
+  );
 }
 
 export function spatialError(scope: DebugScope, ...args: unknown[]) {
   if (!ENABLE_SPATIAL_DEBUG) return;
 
-  console.error(`[XANDEFLIX:SPATIAL:${scope}]`, ...args);
+  console.error(
+    `[XANDEFLIX:SPATIAL:${scope}]`,
+    ...formatSpatialLogArgs(args),
+  );
 }
