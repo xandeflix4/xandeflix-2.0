@@ -1,5 +1,5 @@
 import { setFocus } from '@noriginmedia/norigin-spatial-navigation';
-
+import { spatialDebug } from '@/lib/spatial/spatialDebug';
 import { FOCUS_KEYS, getMediaCardFocusKey } from './focusKeys';
 import { getCategoryItemFocusKey } from './categoryFocusKeys';
 
@@ -109,7 +109,7 @@ function setFocusWithFireTvRetry(focusKey: string) {
 export function focusHeaderWithFallback(focusKeys: string[]) {
   const targetFocusKey = getFirstExistingFocusKey(focusKeys);
 
-  console.log('[Xandeflix ManualNav] Focus header with fallback', {
+  spatialDebug('header', 'Focus header with fallback', {
     targetFocusKey,
     candidates: focusKeys,
   });

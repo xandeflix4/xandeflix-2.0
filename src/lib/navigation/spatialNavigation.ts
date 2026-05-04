@@ -3,9 +3,9 @@
  * This can be expanded to use libraries like @norigin-media/react-spatial-navigation
  * or a custom geometric calculation engine.
  */
-
+import { spatialDebug } from '@/lib/spatial/spatialDebug';
 export const initSpatialNavigation = () => {
-  console.log('Spatial Navigation initialized');
+  spatialDebug('provider', 'Spatial Navigation initialized');
   
   // Example of capturing keydown for TV remote
   window.addEventListener('keydown', (e) => {
@@ -21,7 +21,7 @@ export const initSpatialNavigation = () => {
 
     const direction = keys[e.key];
     if (direction) {
-      console.log(`Navigation: ${direction}`);
+      spatialDebug('provider', 'Navigation:', direction);
       // Dispatch custom event or handle navigation logic
     }
   });

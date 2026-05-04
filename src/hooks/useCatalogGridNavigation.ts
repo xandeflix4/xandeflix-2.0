@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-
+import { spatialDebug } from '@/lib/spatial/spatialDebug';
 import type { CatalogSection } from '../features/catalog/data/catalogSections';
 import {
   CARD_SCROLL_OPTIONS,
@@ -55,7 +55,7 @@ export function useCatalogGridNavigation({
 
       const focusKey = getCategoryItemFocusKey(section.id, itemIndex);
 
-      console.log('[Xandeflix GenericNav] Focus category item', {
+      spatialDebug('catalog-grid', 'Focus category item', {
         categoryIndex,
         categoryId: section.id,
         itemIndex,

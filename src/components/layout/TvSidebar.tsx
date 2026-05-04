@@ -6,7 +6,7 @@ import {
   Settings,
   Tv,
 } from 'lucide-react';
-
+import { spatialDebug } from '@/lib/spatial/spatialDebug';
 import { FocusableButton } from '../tv/FocusableButton';
 import { FocusableSection } from '../tv/FocusableSection';
 
@@ -65,7 +65,7 @@ export function TvSidebar() {
               aria-label={item.label}
               title={item.label}
               onEnterPress={() => {
-                console.log(`[D-Pad] Menu: ${item.label}`);
+                spatialDebug('sidebar', 'Menu:', item.label);
               }}
             >
               <Icon size={26} />

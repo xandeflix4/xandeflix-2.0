@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from 'react';
+import { spatialDebug } from '@/lib/spatial/spatialDebug';
 import {
   getCurrentFocusKey,
   init,
@@ -86,7 +87,7 @@ export function SpatialNavigationProvider({
     });
 
     if (ENABLE_SPATIAL_DEBUG) {
-      console.log('[Xandeflix Spatial] Norigin initialized');
+      spatialDebug('provider', 'Norigin initialized');
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -103,7 +104,7 @@ export function SpatialNavigationProvider({
       }
 
       if (ENABLE_SPATIAL_DEBUG) {
-        console.log('[Xandeflix KeyDown]', {
+        spatialDebug('provider', 'KeyDown', {
           key: event.key,
           keyCode: event.keyCode,
           which: event.which,

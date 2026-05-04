@@ -13,7 +13,7 @@ import {
   getCategorySectionFocusKey,
   getCategorySeeAllFocusKey,
 } from '../../../lib/spatial/categoryFocusKeys';
-
+import { spatialDebug } from '@/lib/spatial/spatialDebug';
 export function CatalogPage() {
   const { user, signOut } = useAuth();
   const { isTv, isMobile } = useDeviceType();
@@ -85,7 +85,7 @@ export function CatalogPage() {
                   focusKey={getCategorySeeAllFocusKey(section.id)}
                   className="inline-flex rounded-full bg-xf-surface px-5 py-3 text-sm font-bold text-white"
                   onEnterPress={() => {
-                    console.log(`[D-Pad] Ver tudo: ${section.title}`);
+                    spatialDebug('catalog-grid', 'Ver tudo:', section.title);
                   }}
                   onArrowPress={(direction) =>
                     spatialNavigation.handleCategorySeeAllArrowPress(
@@ -108,7 +108,7 @@ export function CatalogPage() {
                   index={itemIndex}
                   focusKey={getCategoryItemFocusKey(section.id, itemIndex)}
                   onEnterPress={() => {
-                    console.log(`[D-Pad] Abrir item: ${item.title}`);
+                    spatialDebug('catalog-grid', 'Abrir item:', item.title);
                   }}
                   onArrowPress={(direction) =>
                     spatialNavigation.handleCategoryCardArrowPress(

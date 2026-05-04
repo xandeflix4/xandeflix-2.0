@@ -1,5 +1,5 @@
 import { Home, Search, Settings, Tv } from 'lucide-react';
-
+import { spatialDebug } from '@/lib/spatial/spatialDebug';
 import { FocusableButton } from '../tv/FocusableButton';
 import { FocusableSection } from '../tv/FocusableSection';
 
@@ -41,7 +41,7 @@ export function MobileBottomNav() {
             focusKey={item.navId}
             className="flex flex-col items-center justify-center gap-1 rounded-xl text-xs font-semibold text-xf-muted"
             onEnterPress={() => {
-              console.log(`[D-Pad] Mobile menu: ${item.label}`);
+              spatialDebug('sidebar', 'Mobile menu:', item.label);
             }}
           >
             <Icon size={22} />

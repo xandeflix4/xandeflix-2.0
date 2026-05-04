@@ -4,7 +4,7 @@ import {
   getCurrentFocusKey,
   setFocus,
 } from '@noriginmedia/norigin-spatial-navigation';
-
+import { spatialDebug } from '@/lib/spatial/spatialDebug';
 import { ROUTE_FOCUS_RETRY_DELAYS_MS } from '../lib/spatial/focusKeys';
 import { getRouteInitialFocus } from '../lib/spatial/routeInitialFocus';
 
@@ -37,7 +37,7 @@ function logFocus(message: string, payload?: unknown) {
     return;
   }
 
-  console.log(`[Xandeflix RouteFocus] ${message}`, payload ?? '');
+  spatialDebug('route-focus', message, payload ?? '');
 }
 
 export function useRouteInitialFocus() {

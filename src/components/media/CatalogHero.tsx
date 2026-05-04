@@ -1,5 +1,5 @@
 import { Info, Play } from 'lucide-react';
-
+import { spatialDebug } from '@/lib/spatial/spatialDebug';
 import { FocusableButton } from '../tv/FocusableButton';
 import { FocusableSection } from '../tv/FocusableSection';
 import { FOCUS_KEYS } from '../../lib/spatial/focusKeys';
@@ -17,11 +17,11 @@ export function CatalogHero({
   onInfoArrowPress,
 }: CatalogHeroProps) {
   function handlePlay() {
-    console.log('[D-Pad] Assistir agora');
+    spatialDebug('hero', 'Assistir agora');
   }
 
   function handleMoreInfo() {
-    console.log('[D-Pad] Mais informações');
+    spatialDebug('hero', 'Mais informações');
   }
 
   return (

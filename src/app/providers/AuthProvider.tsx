@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
+import { spatialError } from '@/lib/spatial/spatialDebug';
 
 import { supabase } from '../../lib/supabase/supabaseClient';
 
@@ -39,7 +40,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const { data, error } = await supabase.auth.getSession();
 
     if (error) {
-      console.error('[AuthProvider] Erro ao buscar sessão:', error.message);
+      spatialError('provider', '[AuthProvider] Erro ao buscar sessão:', error.message);
       setSession(null);
       setUser(null);
       setIsLoading(false);

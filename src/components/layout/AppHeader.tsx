@@ -1,5 +1,5 @@
 import { Search, UserRound, LogOut } from 'lucide-react';
-
+import { spatialDebug } from '@/lib/spatial/spatialDebug';
 import { FocusableButton } from '../tv/FocusableButton';
 import { FocusableSection } from '../tv/FocusableSection';
 import { useDeviceType } from '../../hooks/useDeviceType';
@@ -46,7 +46,7 @@ export function AppHeader({
             className="inline-flex rounded-full bg-xf-surface-soft p-3 text-white"
             aria-label="Pesquisar"
             onEnterPress={() => {
-              console.log('[D-Pad] Pesquisar');
+              spatialDebug('header', 'Pesquisar');
             }}
             onArrowPress={navigation?.onSearchArrowPress}
           >
@@ -60,7 +60,7 @@ export function AppHeader({
             className="inline-flex rounded-full bg-xf-surface-soft p-3 text-white"
             aria-label="Perfil"
             onEnterPress={() => {
-              console.log('[D-Pad] Perfil');
+              spatialDebug('header', 'Perfil');
             }}
             onArrowPress={navigation?.onProfileArrowPress}
           >
