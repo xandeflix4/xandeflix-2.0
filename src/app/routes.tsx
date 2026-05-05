@@ -17,6 +17,10 @@ const TestPlaylistPage = lazy(
   () => import('../features/player/pages/TestPlaylistPage'),
 );
 
+const DirectSourcePlaylistPage = lazy(
+  () => import('../features/playlists/pages/DirectSourcePlaylistPage'),
+);
+
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -73,6 +77,15 @@ export function AppRoutes() {
             element={
               <ProtectedRoute>
                 <TestPlaylistPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/playlists/direct-source"
+            element={
+              <ProtectedRoute>
+                <DirectSourcePlaylistPage />
               </ProtectedRoute>
             }
           />
