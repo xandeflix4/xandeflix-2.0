@@ -13,6 +13,10 @@ const UniversalPlayerPage = lazy(
   () => import('../features/player/pages/UniversalPlayerPage'),
 );
 
+const TestPlaylistPage = lazy(
+  () => import('../features/player/pages/TestPlaylistPage'),
+);
+
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -60,6 +64,15 @@ export function AppRoutes() {
             element={
               <ProtectedRoute>
                 <UniversalPlayerPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/player/test-playlist"
+            element={
+              <ProtectedRoute>
+                <TestPlaylistPage />
               </ProtectedRoute>
             }
           />
