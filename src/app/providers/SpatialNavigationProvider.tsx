@@ -1,5 +1,8 @@
 import { ENABLE_SPATIAL_DEBUG, spatialDebug } from '@/lib/spatial/spatialDebug';
 import { useEffect, type ReactNode } from 'react';
+
+import { FocusSafetyGuard } from '@/features/tv-focus';
+
 import {
   getCurrentFocusKey,
   init,
@@ -126,5 +129,9 @@ export function SpatialNavigationProvider({
   }, []);
 
 
-  return children;
+    return (
+    <FocusSafetyGuard>
+      {children}
+    </FocusSafetyGuard>
+  );
 }
