@@ -1,4 +1,10 @@
-import { useCallback, useMemo, useState } from 'react';
+import {
+  useEffect,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
+import { setFocus } from '@noriginmedia/norigin-spatial-navigation';
 import { useNavigate } from 'react-router-dom';
 
 import { FocusableButton } from '@/components/tv/FocusableButton';
@@ -9,6 +15,10 @@ import {
 import type { IptvChannel } from '../types/playlist';
 
 const MAX_VISIBLE_CHANNELS = 50;
+
+const DIRECT_SOURCE_INITIAL_FOCUS_KEY = 'direct-source-load-button';
+
+const DIRECT_SOURCE_FOCUS_RETRY_DELAYS_MS = [80, 180, 350, 700] as const;
 
 function DirectSourcePlaylistContent() {
   const navigate = useNavigate();
@@ -224,6 +234,17 @@ function DirectSourcePlaylistContent() {
 }
 
 export default function DirectSourcePlaylistPage() {
+  useEffect(() => {
+    const timers = DIRECT_SOURCE_FOCUS_RETRY_DELAYS_MS.map((delay) =>
+      window.setTimeout(() => {
+        setFocus(DIRECT_SOURCE_INITIAL_FOCUS_KEY);
+      }, delay),
+    );
+
+    return () => {
+      timers.forEach((timer) => window.clearTimeout(timer));
+    };
+  }, []);
   return (
     <PlaylistRuntimeProvider>
       <DirectSourcePlaylistContent />
