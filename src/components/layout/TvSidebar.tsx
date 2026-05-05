@@ -6,6 +6,8 @@ import {
   Settings,
   Tv,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
 import { spatialDebug } from '@/lib/spatial/spatialDebug';
 import { FocusableButton } from '../tv/FocusableButton';
 import { FocusableSection } from '../tv/FocusableSection';
@@ -15,6 +17,7 @@ const menuItems = [
     label: 'Início',
     icon: Home,
     navId: 'sidebar-home',
+    path: '/',
   },
   {
     label: 'Pesquisar',
@@ -25,6 +28,7 @@ const menuItems = [
     label: 'Canais',
     icon: Tv,
     navId: 'sidebar-channels',
+    path: '/playlists/direct-source',
   },
   {
     label: 'Filmes',
@@ -44,6 +48,8 @@ const menuItems = [
 ];
 
 export function TvSidebar() {
+  const navigate = useNavigate();
+
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-24 flex-col items-center border-r border-white/5 bg-black/80 py-6 backdrop-blur">
       <div className="mb-10 flex size-12 items-center justify-center rounded-2xl bg-xf-red text-xl font-black text-white">
@@ -57,6 +63,15 @@ export function TvSidebar() {
         {menuItems.map((item) => {
           const Icon = item.icon;
 
+          const handlePress = () => {
+            if (item.path) {
+              navigate(item.path);
+              return;
+            }
+
+            spatialDebug('sidebar', 'Menu:', item.label);
+          };
+
           return (
             <FocusableButton
               key={item.navId}
@@ -64,9 +79,8 @@ export function TvSidebar() {
               className="group flex size-14 items-center justify-center rounded-2xl bg-transparent text-xf-muted hover:text-white"
               aria-label={item.label}
               title={item.label}
-              onEnterPress={() => {
-                spatialDebug('sidebar', 'Menu:', item.label);
-              }}
+              onEnterPress={handlePress}
+              onClick={handlePress}
             >
               <Icon size={26} />
             </FocusableButton>
