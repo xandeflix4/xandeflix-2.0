@@ -11,6 +11,7 @@ import { useAuth } from './providers/AuthProvider';
 import { isCurrentUserAdmin } from '../features/admin/services';
 import { AdminClientsPage } from '../features/admin/pages/AdminClientsPage';
 import { AdminDevicesPage } from '../features/admin/pages/AdminDevicesPage';
+import { AdminIptvSourcesPage } from '../features/admin/pages/AdminIptvSourcesPage';
 import { AdminDashboardPage } from '../features/admin/pages/AdminDashboardPage';
 import { LoginPage } from '../features/auth/pages/LoginPage';
 import { CatalogPage } from '../features/catalog/pages/CatalogPage';
@@ -162,6 +163,15 @@ export function AppRoutes() {
               element={
                 <AdminRoute>
                   <AdminDevicesPage />
+                </AdminRoute>
+              }
+            />
+
+            <Route
+              path="/admin/iptv-sources"
+              element={
+                <AdminRoute>
+                  <AdminIptvSourcesPage />
                 </AdminRoute>
               }
             />
