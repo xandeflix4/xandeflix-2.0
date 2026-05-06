@@ -471,6 +471,150 @@ async function parsePlaylistFromResponse(
   };
 }
 
+function shouldUseNativeHttpFallback(error: unknown) {
+  if (!Capacitor.isNativePlatform()) {
+    return false;
+  }
+
+  if (error instanceof TypeError) {
+    return true;
+  }
+
+  const errorMessage =
+    error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
+
+  return (
+    errorMessage.includes('failed to fetch') ||
+    errorMessage.includes('networkerror') ||
+    errorMessage.includes('cors') ||
+    errorMessage.includes('load failed') ||
+    errorMessage.includes('tempo limite')
+  );
+}
+
+function normalizeNativeResponseText(data: unknown) {
+  if (typeof data === 'string') {
+    return data;
+  }
+
+  if (data === null || data === undefined) {
+    return '';
+  }
+
+  if (typeof data === 'object') {
+    return JSON.stringify(data);
+  }
+
+  return String(data);
+}
+
+function ensureNativeFallbackWithinSizeLimit(contentLength: number | null) {
+  ensurePlaylistWithinSizeLimit(contentLength);
+
+  if (contentLength === null || contentLength <= MAX_NATIVE_TEXT_FALLBACK_BYTES) {
+    return;
+  }
+
+  throw new Error(
+    `A playlist é muito grande para o fallback nativo (${formatMegabytes(contentLength)}). Limite atual: ${formatMegabytes(MAX_NATIVE_TEXT_FALLBACK_BYTES)}.`,
+  );
+}
+
+async function loadPlaylistWithNativeHttpFallback(
+  sourceUrl: string,
+  progress: PlaylistLoadProgress,
+  options: LoadDirectSourcePlaylistOptions | undefined,
+  reportProgress: (force?: boolean) => void,
+): Promise<ParsedPlaylistResult> {
+  console.info(
+    PROGRESS_LOG_TAG,
+    JSON.stringify({
+      phase: 'native_http_fallback',
+      platform: Capacitor.getPlatform(),
+      timestamp: new Date().toISOString(),
+    }),
+  );
+
+  progress.phase = 'downloading';
+  reportProgress(true);
+
+  const response = await withTimeout(
+    CapacitorHttp.request({
+      url: sourceUrl,
+      method: 'GET',
+      responseType: 'text' as const,
+      headers: {
+        Accept:
+          'application/vnd.apple.mpegurl, application/x-mpegURL, audio/mpegurl, text/plain, */*',
+        'User-Agent': 'Xandeflix/1.0',
+      },
+      connectTimeout: PLAYLIST_REQUEST_TIMEOUT_MS,
+      readTimeout: PLAYLIST_REQUEST_TIMEOUT_MS,
+    }),
+  );
+
+  if (response.status < 200 || response.status >= 300) {
+    throw new Error(`Falha ao carregar playlist via fallback nativo. HTTP ${response.status}.`);
+  }
+
+  const contentLength = readContentLengthFromHeaders(response.headers);
+  ensureNativeFallbackWithinSizeLimit(contentLength);
+
+  if (contentLength !== null) {
+    progress.bytesTotal = contentLength;
+    reportProgress(true);
+  }
+
+  const content = normalizeNativeResponseText(response.data);
+
+  ensureLoadedContentWithinSizeLimit(content);
+
+  if (content.length > MAX_NATIVE_TEXT_FALLBACK_BYTES) {
+    throw new Error(
+      `A playlist recebida ultrapassou o limite do fallback nativo (${formatMegabytes(MAX_NATIVE_TEXT_FALLBACK_BYTES)}).`,
+    );
+  }
+
+  progress.phase = 'parsing';
+  progress.bytesReceived = content.length;
+
+  if (progress.bytesTotal === null) {
+    progress.bytesTotal = content.length;
+  }
+
+  reportProgress(true);
+
+  const applyParseProgress = (parseProgress: {
+    parsedLines: number;
+    channelsParsed: number;
+    extinfLines: number;
+    playableUrlLines: number;
+  }) => {
+    progress.phase = 'parsing';
+    progress.parsedLines = parseProgress.parsedLines;
+    progress.channelsParsed = parseProgress.channelsParsed;
+    progress.extinfLines = parseProgress.extinfLines;
+    progress.playableUrlLines = parseProgress.playableUrlLines;
+    reportProgress();
+  };
+
+  const parseOptions: ParseM3uPlaylistProgressiveOptions = {
+    maxChannels: MAX_PLAYLIST_CHANNELS,
+    batchSize: PARSE_BATCH_SIZE,
+    yieldEveryLines: PARSE_YIELD_EVERY_LINES,
+    onChannelsBatch: options?.onChannelsBatch,
+    onProgress: applyParseProgress,
+  };
+
+  const parsedFromText = await parseM3uPlaylistProgressive(content, parseOptions);
+
+  return {
+    channels: parsedFromText.channels,
+    stats: parsedFromText.stats,
+    contentLength: content.length,
+  };
+}
+
 async function loadAndParsePlaylist(
   sourceUrl: string,
   progress: PlaylistLoadProgress,
@@ -486,8 +630,21 @@ async function loadAndParsePlaylist(
   progress.phase = 'downloading';
   reportProgress(true);
 
-  const response = await fetchResponseWithTimeout(sourceUrl);
-  return parsePlaylistFromResponse(response, progress, options, reportProgress);
+  try {
+    const response = await fetchResponseWithTimeout(sourceUrl);
+    return await parsePlaylistFromResponse(response, progress, options, reportProgress);
+  } catch (error) {
+    if (shouldUseNativeHttpFallback(error)) {
+      return loadPlaylistWithNativeHttpFallback(
+        sourceUrl,
+        progress,
+        options,
+        reportProgress,
+      );
+    }
+
+    throw error;
+  }
 }
 
 function buildDiagnostics(
