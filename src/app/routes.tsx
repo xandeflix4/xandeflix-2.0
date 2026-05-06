@@ -13,6 +13,7 @@ import { AdminClientsPage } from '../features/admin/pages/AdminClientsPage';
 import { AdminDevicesPage } from '../features/admin/pages/AdminDevicesPage';
 import { AdminIptvSourcesPage } from '../features/admin/pages/AdminIptvSourcesPage';
 import { AdminChannelsPage } from '../features/admin/pages/AdminChannelsPage';
+import { AdminAuditLogsPage } from '../features/admin/pages/AdminAuditLogsPage';
 import { AdminDashboardPage } from '../features/admin/pages/AdminDashboardPage';
 import { LoginPage } from '../features/auth/pages/LoginPage';
 import { CatalogPage } from '../features/catalog/pages/CatalogPage';
@@ -186,6 +187,14 @@ export function AppRoutes() {
               }
             />
 
+            <Route
+              path="/admin/audit-logs"
+              element={
+                <AdminRoute>
+                  <AdminAuditLogsPage />
+                </AdminRoute>
+              }
+            />
 
             <Route
               path="/player"
