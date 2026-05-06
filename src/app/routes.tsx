@@ -8,6 +8,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { useAuth } from './providers/AuthProvider';
 import { LoginPage } from '../features/auth/pages/LoginPage';
 import { CatalogPage } from '../features/catalog/pages/CatalogPage';
+import { PlaylistRuntimeProvider } from '../features/playlists/providers/PlaylistRuntimeProvider';
 
 const UniversalPlayerPage = lazy(
   () => import('../features/player/pages/UniversalPlayerPage'),
@@ -50,8 +51,9 @@ function RouteLoader() {
 export function AppRoutes() {
   return (
     <BrowserRouter>
-      <Suspense fallback={<RouteLoader />}>
-        <Routes>
+      <PlaylistRuntimeProvider>
+        <Suspense fallback={<RouteLoader />}>
+          <Routes>
           <Route path="/login" element={<LoginPage />} />
 
           <Route
@@ -91,8 +93,9 @@ export function AppRoutes() {
           />
 
           <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Suspense>
+          </Routes>
+        </Suspense>
+      </PlaylistRuntimeProvider>
     </BrowserRouter>
   );
 }

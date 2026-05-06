@@ -10,10 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { FocusableButton } from '@/components/tv/FocusableButton';
 import { FocusableInput } from '@/components/tv/FocusableInput';
 import { maskStreamUrl } from '@/lib/security/maskStreamUrl';
-import {
-  PlaylistRuntimeProvider,
-  usePlaylistRuntime,
-} from '../providers/PlaylistRuntimeProvider';
+import { usePlaylistRuntime } from '../providers/PlaylistRuntimeProvider';
 import type { IptvChannel } from '../types/playlist';
 
 const MAX_VISIBLE_CHANNELS = 50;
@@ -448,9 +445,5 @@ export default function DirectSourcePlaylistPage() {
       timers.forEach((timer) => window.clearTimeout(timer));
     };
   }, []);
-  return (
-    <PlaylistRuntimeProvider>
-      <DirectSourcePlaylistContent />
-    </PlaylistRuntimeProvider>
-  );
+  return <DirectSourcePlaylistContent />;
 }
