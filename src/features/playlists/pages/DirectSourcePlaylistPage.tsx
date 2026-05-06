@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { FocusableButton } from '@/components/tv/FocusableButton';
 import { FocusableInput } from '@/components/tv/FocusableInput';
+import { maskStreamUrl } from '@/lib/security/maskStreamUrl';
 import {
   PlaylistRuntimeProvider,
   usePlaylistRuntime,
@@ -61,6 +62,7 @@ function DirectSourcePlaylistContent() {
 
   const [sourceUrl, setSourceUrl] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const maskedSourceUrl = useMemo(() => maskStreamUrl(sourceUrl), [sourceUrl]);
   const [lastProgressAt, setLastProgressAt] = useState<string | null>(null);
 
   const filteredChannels = useMemo(() => {
@@ -230,6 +232,12 @@ function DirectSourcePlaylistContent() {
             onChange={(event) => setSourceUrl(event.target.value)}
             onArrowPress={handleUrlInputArrowPress}
           />
+
+          {maskedSourceUrl ? (
+            <p className="mt-3 break-all font-mono text-xs text-xf-muted">
+              URL protegida para diagnóstico: {maskedSourceUrl}
+            </p>
+          ) : null}
 
           <div className="mt-6 flex flex-wrap gap-4">
             <FocusableButton

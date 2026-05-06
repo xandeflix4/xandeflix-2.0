@@ -11,7 +11,7 @@ import { FocusableButton } from '@/components/tv/FocusableButton';
 import { createHlsAdapter } from '../lib/hlsAdapter';
 import { createMpegTsAdapter } from '../lib/mpegTsAdapter';
 import { createNativeVideoAdapter } from '../lib/nativeVideoAdapter';
-import { maskStreamUrl } from '../lib/maskStreamUrl';
+import { maskStreamUrl } from '@/lib/security/maskStreamUrl';
 import { logPlayerDebugEvent } from '../lib/playerDebug';
 import { prepareUniversalPlayerSource } from '../lib/playerFactory';
 import type {

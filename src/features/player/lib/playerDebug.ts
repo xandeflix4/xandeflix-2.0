@@ -1,4 +1,4 @@
-import { maskObjectStreamUrls } from './maskStreamUrl';
+import { maskObjectStreamUrls } from '@/lib/security/maskStreamUrl';
 
 import type { PlayerTelemetryEvent } from '../types/player';
 
