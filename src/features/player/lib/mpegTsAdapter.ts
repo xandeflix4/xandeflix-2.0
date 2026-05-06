@@ -46,6 +46,76 @@ function createMpegTsTelemetryEvent(
   };
 }
 
+function uniqueValues(values: string[]) {
+  return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
+}
+
+function summarizeUnknown(value: unknown) {
+  if (value instanceof Error) {
+    return value.message;
+  }
+
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
+}
+
+function summarizeMpegTsArgs(args: unknown[]) {
+  if (args.length === 0) {
+    return 'erro desconhecido';
+  }
+
+  return args.map(summarizeUnknown).join(' | ');
+}
+
+function isNumericStreamId(value: string) {
+  return /^\d+$/.test(value);
+}
+
+function buildMpegTsCandidateUrls(rawUrl: string) {
+  const trimmedUrl = rawUrl.trim();
+  const [urlWithoutHeaders, ...headerParts] = trimmedUrl.split('|');
+  const headerSuffix = headerParts.length > 0 ? `|${headerParts.join('|')}` : '';
+
+  const candidates = [trimmedUrl];
+
+  try {
+    const parsedUrl = new URL(urlWithoutHeaders);
+    const segments = parsedUrl.pathname.split('/').filter(Boolean);
+
+    if (segments.length >= 3) {
+      const streamId = segments[segments.length - 1] ?? '';
+      const password = segments[segments.length - 2] ?? '';
+      const username = segments[segments.length - 3] ?? '';
+      const firstSegment = segments[0]?.toLowerCase();
+
+      const isKnownTypedPath =
+        firstSegment === 'live' ||
+        firstSegment === 'movie' ||
+        firstSegment === 'series' ||
+        firstSegment === 'vod';
+
+      if (!isKnownTypedPath && isNumericStreamId(streamId)) {
+        candidates.push(
+          `${parsedUrl.origin}/live/${username}/${password}/${streamId}.ts${headerSuffix}`,
+          `${parsedUrl.origin}/live/${username}/${password}/${streamId}${headerSuffix}`,
+          `${parsedUrl.origin}/${username}/${password}/${streamId}.ts${headerSuffix}`,
+        );
+      }
+    }
+  } catch {
+    // Mantém apenas a URL original se ela não puder ser analisada com URL().
+  }
+
+  return uniqueValues(candidates);
+}
+
 function waitForNativeReadiness(videoElement: HTMLVideoElement, timeoutMs: number) {
   if (videoElement.readyState >= HTMLMediaElement.HAVE_METADATA) {
     return Promise.resolve();
@@ -61,13 +131,8 @@ function waitForNativeReadiness(videoElement: HTMLVideoElement, timeoutMs: numbe
       videoElement.removeEventListener('canplay', handleReady);
       videoElement.removeEventListener('error', handleError);
 
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-
-      if (softResolveId) {
-        clearTimeout(softResolveId);
-      }
+      if (timeoutId) clearTimeout(timeoutId);
+      if (softResolveId) clearTimeout(softResolveId);
     };
 
     const handleReady = () => {
@@ -87,9 +152,6 @@ function waitForNativeReadiness(videoElement: HTMLVideoElement, timeoutMs: numbe
     videoElement.addEventListener('canplay', handleReady, { once: true });
     videoElement.addEventListener('error', handleError, { once: true });
 
-    // Streams ao vivo podem não emitir metadata antes do play.
-    // Se não houver erro imediato, libera o botão Reproduzir e deixa o play
-    // acionar a conexão real do decoder nativo.
     softResolveId = setTimeout(() => {
       cleanup();
       resolve();
@@ -130,9 +192,7 @@ function waitForMetadata(videoElement: HTMLVideoElement, timeoutMs: number) {
       videoElement.removeEventListener('loadedmetadata', handleLoadedMetadata);
       videoElement.removeEventListener('error', handleError);
 
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
+      if (timeoutId) clearTimeout(timeoutId);
     };
 
     const handleLoadedMetadata = () => {
@@ -200,7 +260,15 @@ export function createMpegTsAdapter(
       createMpegTsTelemetryEvent(name, level, message, data),
     );
   };
+
   let playerInstance: MpegTsPlayer | null = null;
+
+  const destroyCurrentPlayer = () => {
+    playerInstance?.pause?.();
+    playerInstance?.unload?.();
+    playerInstance?.destroy();
+    playerInstance = null;
+  };
 
   return {
     kind: 'mpegts',
@@ -210,33 +278,54 @@ export function createMpegTsAdapter(
         throw new Error('URL MPEG-TS não informada.');
       }
 
-      if (Capacitor.isNativePlatform()) {
-        pushTelemetry(
-          'MPEGTS_NATIVE_DIRECT_START',
-          'info',
-          'Tentando MPEG-TS direto pelo HTMLVideoElement nativo do Android.',
-        );
+      const candidateUrls = buildMpegTsCandidateUrls(source.url);
 
-        try {
-          await loadWithNativeVideoElement(videoElement, source);
+      pushTelemetry(
+        'MPEGTS_CANDIDATES_READY',
+        'info',
+        `Preparando ${candidateUrls.length} candidato(s) de URL MPEG-TS.`,
+        {
+          candidates: candidateUrls,
+        },
+      );
+
+      if (Capacitor.isNativePlatform()) {
+        for (const [index, candidateUrl] of candidateUrls.entries()) {
           pushTelemetry(
-            'MPEGTS_NATIVE_DIRECT_READY',
+            'MPEGTS_NATIVE_DIRECT_START',
             'info',
-            'MPEG-TS nativo preparado para reprodução.',
-          );
-          return;
-        } catch (nativeError) {
-          pushTelemetry(
-            'MPEGTS_NATIVE_DIRECT_FAILED',
-            'warn',
-            'Fallback nativo direto falhou; tentando mpegts.js.',
+            `Tentando MPEG-TS nativo Android. Candidato ${index + 1}/${candidateUrls.length}.`,
             {
-              message:
-                nativeError instanceof Error
-                  ? nativeError.message
-                  : String(nativeError),
+              url: candidateUrl,
             },
           );
+
+          try {
+            await loadWithNativeVideoElement(videoElement, {
+              ...source,
+              url: candidateUrl,
+            });
+
+            pushTelemetry(
+              'MPEGTS_NATIVE_DIRECT_READY',
+              'info',
+              `MPEG-TS nativo preparado. Candidato ${index + 1}/${candidateUrls.length}.`,
+              {
+                url: candidateUrl,
+              },
+            );
+            return;
+          } catch (nativeError) {
+            pushTelemetry(
+              'MPEGTS_NATIVE_DIRECT_FAILED',
+              'warn',
+              `Fallback nativo direto falhou no candidato ${index + 1}/${candidateUrls.length}.`,
+              {
+                url: candidateUrl,
+                message: summarizeUnknown(nativeError),
+              },
+            );
+          }
         }
       }
 
@@ -267,156 +356,148 @@ export function createMpegTsAdapter(
         throw new Error('MPEG-TS não é suportado neste ambiente.');
       }
 
-      playerInstance?.destroy();
-      playerInstance = null;
+      let lastError: Error | null = null;
 
-      videoElement.preload = 'metadata';
+      for (const [index, candidateUrl] of candidateUrls.entries()) {
+        destroyCurrentPlayer();
 
-      const player = mpegTsApi.createPlayer(
-        {
-          type: 'mse',
-          isLive: true,
-          hasAudio: true,
-          hasVideo: true,
-          url: source.url,
-        },
-        {
-          enableWorker: true,
-          lazyLoad: false,
-          autoCleanupSourceBuffer: true,
-          stashInitialSize: 128,
-          fixAudioTimestampGap: true,
-        },
-      );
+        videoElement.preload = 'metadata';
 
-      playerInstance = player;
-      pushTelemetry(
-        'MPEGTS_PLAYER_CREATED',
-        'info',
-        'Player mpegts.js criado.',
-      );
+        const player = mpegTsApi.createPlayer(
+          {
+            type: 'mse',
+            isLive: true,
+            hasAudio: true,
+            hasVideo: true,
+            url: candidateUrl,
+          },
+          {
+            enableWorker: true,
+            lazyLoad: false,
+            autoCleanupSourceBuffer: true,
+            stashInitialSize: 128,
+            fixAudioTimestampGap: true,
+          },
+        );
 
-      pushTelemetry(
-        'MPEGTS_PLAYER_CREATED',
-        'info',
-        'Player mpegts.js criado.',
-      );
+        playerInstance = player;
 
-      player.attachMediaElement(videoElement);
+        pushTelemetry(
+          'MPEGTS_PLAYER_CREATED',
+          'info',
+          `Player mpegts.js criado. Candidato ${index + 1}/${candidateUrls.length}.`,
+          {
+            url: candidateUrl,
+          },
+        );
 
-      pushTelemetry(
-        'MPEGTS_MEDIA_ATTACHED',
-        'info',
-        'Elemento de vídeo anexado ao mpegts.js.',
-      );
+        player.attachMediaElement(videoElement);
 
-      pushTelemetry(
-        'MPEGTS_MEDIA_ATTACHED',
-        'info',
-        'Elemento de vídeo anexado ao mpegts.js.',
-      );
-
-      await new Promise<void>((resolve, reject) => {
-        let settled = false;
-
-        const settleResolve = () => {
-          if (settled) {
-            return;
-          }
-
-          settled = true;
-          resolve();
-        };
-
-        const settleReject = (error: Error) => {
-          if (settled) {
-            return;
-          }
-
-          settled = true;
-          reject(error);
-        };
-
-        const errorEventName = mpegTsApi.Events?.ERROR;
-
-        if (errorEventName && typeof player.on === 'function') {
-          player.on(errorEventName, (...args: unknown[]) => {
-            let reason = 'erro desconhecido';
-
-            if (args.length > 0) {
-              try {
-                reason =
-                  typeof args[0] === 'string'
-                    ? args[0]
-                    : JSON.stringify(args[0]);
-              } catch {
-                reason = String(args[0]);
-              }
-            }
-
-            pushTelemetry(
-              'MPEGTS_ERROR',
-              'error',
-              'Erro emitido pelo mpegts.js.',
-              {
-                reason,
-              },
-            );
-
-            pushTelemetry(
-              'MPEGTS_ERROR',
-              'error',
-              'Erro emitido pelo mpegts.js.',
-              {
-                reason,
-              },
-            );
-
-            settleReject(new Error(`Falha no mpegts.js: ${reason}`));
-          });
-        }
+        pushTelemetry(
+          'MPEGTS_MEDIA_ATTACHED',
+          'info',
+          'Elemento de vídeo anexado ao mpegts.js.',
+        );
 
         try {
-          pushTelemetry(
-            'MPEGTS_LOAD_CALLED',
-            'info',
-            'player.load() chamado no mpegts.js.',
-          );
+          await new Promise<void>((resolve, reject) => {
+            let settled = false;
 
-          pushTelemetry(
-            'MPEGTS_LOAD_CALLED',
-            'info',
-            'player.load() chamado no mpegts.js.',
-          );
+            const settleResolve = () => {
+              if (settled) return;
+              settled = true;
+              resolve();
+            };
 
-          player.load();
+            const settleReject = (error: Error) => {
+              if (settled) return;
+              settled = true;
+              reject(error);
+            };
+
+            const errorEventName = mpegTsApi.Events?.ERROR;
+
+            if (errorEventName && typeof player.on === 'function') {
+              player.on(errorEventName, (...args: unknown[]) => {
+                const reason = summarizeMpegTsArgs(args);
+
+                pushTelemetry(
+                  'MPEGTS_ERROR',
+                  'error',
+                  `Erro emitido pelo mpegts.js: ${reason}`,
+                  {
+                    url: candidateUrl,
+                    reason,
+                  },
+                );
+
+                settleReject(new Error(`Falha no mpegts.js: ${reason}`));
+              });
+            }
+
+            try {
+              pushTelemetry(
+                'MPEGTS_LOAD_CALLED',
+                'info',
+                `player.load() chamado no mpegts.js. Candidato ${index + 1}/${candidateUrls.length}.`,
+                {
+                  url: candidateUrl,
+                },
+              );
+
+              player.load();
+            } catch (error) {
+              settleReject(
+                error instanceof Error
+                  ? error
+                  : new Error('Falha ao iniciar player MPEG-TS.'),
+              );
+              return;
+            }
+
+            waitForMetadata(videoElement, 25_000)
+              .then(() => {
+                pushTelemetry(
+                  'MPEGTS_METADATA_READY',
+                  'info',
+                  'Metadados MPEG-TS carregados.',
+                  {
+                    url: candidateUrl,
+                  },
+                );
+
+                settleResolve();
+              })
+              .catch((error) => {
+                settleReject(
+                  error instanceof Error
+                    ? error
+                    : new Error('Falha ao carregar metadados MPEG-TS.'),
+                );
+              });
+          });
+
+          return;
         } catch (error) {
-          settleReject(
+          lastError =
             error instanceof Error
               ? error
-              : new Error('Falha ao iniciar player MPEG-TS.'),
+              : new Error('Falha desconhecida no mpegts.js.');
+
+          pushTelemetry(
+            'MPEGTS_CANDIDATE_FAILED',
+            'warn',
+            `Candidato MPEG-TS falhou: ${lastError.message}`,
+            {
+              url: candidateUrl,
+            },
           );
-          return;
         }
+      }
 
-        waitForMetadata(videoElement, 25_000)
-          .then(() => {
-            pushTelemetry(
-              'MPEGTS_METADATA_READY',
-              'info',
-              'Metadados MPEG-TS carregados.',
-            );
+      destroyCurrentPlayer();
 
-            settleResolve();
-          })
-          .catch((error) => {
-            settleReject(
-              error instanceof Error
-                ? error
-                : new Error('Falha ao carregar metadados MPEG-TS.'),
-            );
-          });
-      });
+      throw lastError ?? new Error('Falha ao carregar stream MPEG-TS.');
     },
 
     async play() {
@@ -429,10 +510,7 @@ export function createMpegTsAdapter(
     },
 
     destroy() {
-      playerInstance?.pause?.();
-      playerInstance?.unload?.();
-      playerInstance?.destroy();
-      playerInstance = null;
+      destroyCurrentPlayer();
 
       videoElement.pause();
       videoElement.removeAttribute('src');
