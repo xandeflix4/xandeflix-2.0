@@ -10,13 +10,25 @@ function removeQueryAndHash(value: string) {
 
 function getExtension(value: string) {
   const cleanValue = removeQueryAndHash(value).toLowerCase();
-  const lastDotIndex = cleanValue.lastIndexOf('.');
+
+  let pathname = cleanValue;
+
+  try {
+    pathname = new URL(cleanValue).pathname.toLowerCase();
+  } catch {
+    pathname = cleanValue;
+  }
+
+  const lastSlashIndex = pathname.lastIndexOf('/');
+  const lastPathSegment =
+    lastSlashIndex === -1 ? pathname : pathname.slice(lastSlashIndex + 1);
+  const lastDotIndex = lastPathSegment.lastIndexOf('.');
 
   if (lastDotIndex === -1) {
     return null;
   }
 
-  return cleanValue.slice(lastDotIndex);
+  return lastPathSegment.slice(lastDotIndex);
 }
 
 function detectByMimeType(mimeType?: string): StreamKind | null {
@@ -74,6 +86,38 @@ function detectByExtension(extension: string | null): StreamKind {
   return 'unknown';
 }
 
+function isNumericStreamId(value: string) {
+  return /^\d+$/.test(value);
+}
+
+function detectBareXtreamCredentialPath(pathname: string): StreamKind | null {
+  const segments = pathname
+    .split('/')
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+
+  if (segments.length < 3) {
+    return null;
+  }
+
+  const firstSegment = segments[0]?.toLowerCase();
+  const lastSegment = segments[segments.length - 1] ?? '';
+
+  // VOD/séries podem depender de outra estratégia quando vierem sem extensão.
+  if (firstSegment === 'movie' || firstSegment === 'series' || firstSegment === 'vod') {
+    return null;
+  }
+
+  // Alguns painéis Xtream/CDN entregam canais ao vivo como:
+  // http://host/usuario/senha/id
+  // sem /live/ e sem extensão .ts.
+  if (isNumericStreamId(lastSegment)) {
+    return 'mpegts';
+  }
+
+  return null;
+}
+
 function detectByUrlHints(url: string): StreamKind | null {
   const normalizedUrl = url.trim();
 
@@ -107,6 +151,12 @@ function detectByUrlHints(url: string): StreamKind | null {
     if (pathLower.includes('/live/')) {
       return 'mpegts';
     }
+
+    const bareXtreamKind = detectBareXtreamCredentialPath(parsedUrl.pathname);
+
+    if (bareXtreamKind) {
+      return bareXtreamKind;
+    }
   } catch {
     const fallbackLower = normalizedUrl.toLowerCase();
 
@@ -119,6 +169,14 @@ function detectByUrlHints(url: string): StreamKind | null {
     }
 
     if (fallbackLower.includes('/live/')) {
+      return 'mpegts';
+    }
+
+    const fallbackWithoutQuery = removeQueryAndHash(fallbackLower);
+    const fallbackSegments = fallbackWithoutQuery.split('/').filter(Boolean);
+    const fallbackLastSegment = fallbackSegments[fallbackSegments.length - 1] ?? '';
+
+    if (isNumericStreamId(fallbackLastSegment)) {
       return 'mpegts';
     }
   }

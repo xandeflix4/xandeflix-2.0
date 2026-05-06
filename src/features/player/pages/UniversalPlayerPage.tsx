@@ -227,7 +227,9 @@ export default function UniversalPlayerPage() {
             onTelemetryEvent: pushTelemetryEvent,
           })
         : stream.kind === 'mpegts'
-          ? createMpegTsAdapter(videoElement)
+          ? createMpegTsAdapter(videoElement, {
+              onTelemetryEvent: pushTelemetryEvent,
+            })
           : createNativeVideoAdapter(videoElement);
 
     adapterRef.current = adapter;
@@ -468,7 +470,17 @@ export default function UniversalPlayerPage() {
                 );
               }}
               onWaiting={() => {
-                setStatus('buffering');
+                setStatus((currentStatus) => {
+                  if (
+                    currentStatus === 'error' ||
+                    currentStatus === 'unsupported'
+                  ) {
+                    return currentStatus;
+                  }
+
+                  return 'buffering';
+                });
+
                 pushNativeVideoEvent(
                   'WAITING',
                   'warn',

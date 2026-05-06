@@ -40,7 +40,7 @@ export type UniversalPlayerAdapter = {
 
 export type PlayerEventLevel = 'info' | 'warn' | 'error';
 
-export type PlayerEventSource = 'player' | 'hls' | 'native';
+export type PlayerEventSource = 'player' | 'hls' | 'native' | 'mpegts';
 
 export type PlayerTelemetryEvent = {
   source: PlayerEventSource;
