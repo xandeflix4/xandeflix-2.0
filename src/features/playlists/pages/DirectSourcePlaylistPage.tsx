@@ -10,6 +10,11 @@ import { useNavigate } from 'react-router-dom';
 import { FocusableButton } from '@/components/tv/FocusableButton';
 import { FocusableInput } from '@/components/tv/FocusableInput';
 import { maskStreamUrl } from '@/lib/security/maskStreamUrl';
+import { getOrCreateDeviceIdentifier } from '../lib/deviceIdentifier';
+import {
+  getAuthorizedIptvSource,
+  mapAuthorizedIptvSourceToPlaylistSource,
+} from '../services/authorizedIptvSource.service';
 import { usePlaylistRuntime } from '../providers/PlaylistRuntimeProvider';
 import type { IptvChannel } from '../types/playlist';
 
@@ -17,6 +22,7 @@ const MAX_VISIBLE_CHANNELS = 50;
 
 const DIRECT_SOURCE_URL_INPUT_FOCUS_KEY = 'direct-source-url-input';
 const DIRECT_SOURCE_LOAD_BUTTON_FOCUS_KEY = 'direct-source-load-button';
+const DIRECT_SOURCE_AUTHORIZED_LOAD_BUTTON_FOCUS_KEY = 'direct-source-authorized-load-button';
 const DIRECT_SOURCE_CLEAR_BUTTON_FOCUS_KEY = 'direct-source-clear-button';
 const DIRECT_SOURCE_PLAYER_BUTTON_FOCUS_KEY = 'direct-source-player-button';
 const DIRECT_SOURCE_FIRST_CHANNEL_FOCUS_KEY = 'direct-source-channel-0';
@@ -96,6 +102,17 @@ function DirectSourcePlaylistContent() {
       name: 'Lista IPTV direta',
     });
   }, [loadFromSource, sourceUrl]);
+
+  const handleLoadAuthorizedSource = useCallback(() => {
+    void (async () => {
+      const deviceIdentifier = getOrCreateDeviceIdentifier();
+      const authorizedSource = await getAuthorizedIptvSource(deviceIdentifier);
+      const playlistSource = mapAuthorizedIptvSourceToPlaylistSource(authorizedSource);
+
+      setSourceUrl(playlistSource.url);
+      await loadFromSource(playlistSource);
+    })();
+  }, [loadFromSource]);
 
   const handleUrlInputArrowPress = useCallback((direction: string) => {
     if (direction === 'down') {
@@ -246,6 +263,17 @@ function DirectSourcePlaylistContent() {
               onArrowPress={handleTopButtonsArrowPress}
             >
               {status === 'loading' ? 'Carregando...' : 'Carregar direto'}
+            </FocusableButton>
+
+            <FocusableButton
+              focusKey={DIRECT_SOURCE_AUTHORIZED_LOAD_BUTTON_FOCUS_KEY}
+              className="rounded-xl bg-white/10 px-6 py-4 text-lg font-black text-white"
+              disabled={status === 'loading'}
+              onEnterPress={handleLoadAuthorizedSource}
+              onClick={handleLoadAuthorizedSource}
+              onArrowPress={handleTopButtonsArrowPress}
+            >
+              {status === 'loading' ? 'Carregando...' : 'Carregar autorizado'}
             </FocusableButton>
 
             <FocusableButton
