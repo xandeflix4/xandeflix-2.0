@@ -31,3 +31,6 @@ live-logcat-*.txt
 fix-*.cjs
 add-*.cjs
 strengthen-*.cjs
+
+# Supabase local state
+supabase/.temp/
