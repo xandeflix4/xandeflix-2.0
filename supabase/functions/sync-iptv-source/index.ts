@@ -22,6 +22,8 @@ type ParsedChannel = {
   sort_order: number;
 };
 
+const MAX_CHANNELS_PER_SYNC = 300;
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -74,13 +76,15 @@ function isPlayableUrl(line: string) {
   );
 }
 
-function parseM3u(content: string, sourceId: string): ParsedChannel[] {
+async function parseM3uFromResponse(
+  response: Response,
+  sourceId: string,
+  limit = MAX_CHANNELS_PER_SYNC,
+): Promise<ParsedChannel[]> {
   const channels: ParsedChannel[] = [];
-  const lines = content
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean);
+  const decoder = new TextDecoder();
 
+  let buffer = '';
   let pendingMetadata: {
     name?: string;
     logo?: string;
@@ -89,7 +93,17 @@ function parseM3u(content: string, sourceId: string): ParsedChannel[] {
     tvgName?: string;
   } | null = null;
 
-  for (const line of lines) {
+  function processLine(rawLine: string) {
+    if (channels.length >= limit) {
+      return;
+    }
+
+    const line = rawLine.trim();
+
+    if (!line) {
+      return;
+    }
+
     if (line.startsWith('#EXTINF')) {
       const attributes = parseAttributes(line);
 
@@ -101,11 +115,11 @@ function parseM3u(content: string, sourceId: string): ParsedChannel[] {
         tvgName: attributes['tvg-name'],
       };
 
-      continue;
+      return;
     }
 
     if (line.startsWith('#') || !isPlayableUrl(line)) {
-      continue;
+      return;
     }
 
     const name =
@@ -124,6 +138,45 @@ function parseM3u(content: string, sourceId: string): ParsedChannel[] {
     });
 
     pendingMetadata = null;
+  }
+
+  if (!response.body) {
+    return channels;
+  }
+
+  const reader = response.body.getReader();
+
+  while (channels.length < limit) {
+    const { value, done } = await reader.read();
+
+    if (done) {
+      break;
+    }
+
+    buffer += decoder.decode(value, { stream: true });
+
+    const lines = buffer.split(/\r?\n/);
+    buffer = lines.pop() ?? '';
+
+    for (const line of lines) {
+      processLine(line);
+
+      if (channels.length >= limit) {
+        try {
+          await reader.cancel();
+        } catch {
+          // ignore cancel errors
+        }
+
+        return channels;
+      }
+    }
+  }
+
+  buffer += decoder.decode();
+
+  if (buffer && channels.length < limit) {
+    processLine(buffer);
   }
 
   return channels;
@@ -295,8 +348,11 @@ Deno.serve(async (request) => {
       );
     }
 
-    const content = await playlistResponse.text();
-    const channels = parseM3u(content, source.id);
+    const channels = await parseM3uFromResponse(
+      playlistResponse,
+      source.id,
+      MAX_CHANNELS_PER_SYNC,
+    );
 
     if (channels.length === 0) {
       return jsonResponse(
@@ -353,6 +409,7 @@ Deno.serve(async (request) => {
         source_name: source.name,
         source_type: source.type,
         channels_count: channels.length,
+        import_limit: MAX_CHANNELS_PER_SYNC,
       },
     });
 
@@ -361,6 +418,7 @@ Deno.serve(async (request) => {
       sourceId: source.id,
       sourceName: source.name,
       channelsCount: channels.length,
+      importLimit: MAX_CHANNELS_PER_SYNC,
     });
   } catch (error) {
     return jsonResponse(
