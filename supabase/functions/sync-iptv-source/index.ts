@@ -139,8 +139,9 @@ Deno.serve(async (request) => {
     );
   }
 
-  const supabaseUrl = Deno.env.get('SUPABASE_URL');
-  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
   if (!supabaseUrl || !serviceRoleKey) {
     return jsonResponse(
@@ -333,4 +334,16 @@ Deno.serve(async (request) => {
     sourceName: source.name,
     channelsCount: channels.length,
   });
+  } catch (error) {
+    return jsonResponse(
+      {
+        error: 'Erro interno ao sincronizar fonte IPTV.',
+        details:
+          error instanceof Error
+            ? error.message
+            : String(error),
+      },
+      500,
+    );
+  }
 });
