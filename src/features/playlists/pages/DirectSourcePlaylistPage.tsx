@@ -65,6 +65,7 @@ function DirectSourcePlaylistContent() {
 
   const [sourceUrl, setSourceUrl] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [deviceIdentifier, setDeviceIdentifier] = useState('');
   const maskedSourceUrl = useMemo(() => maskStreamUrl(sourceUrl), [sourceUrl]);
   const [lastProgressAt, setLastProgressAt] = useState<string | null>(null);
   const [authorizedLoadError, setAuthorizedLoadError] = useState<string | null>(null);
@@ -96,6 +97,10 @@ function DirectSourcePlaylistContent() {
   }, [progress]);
 
   const hasVisibleChannels = filteredChannels.length > 0;
+
+  useEffect(() => {
+    setDeviceIdentifier(getOrCreateDeviceIdentifier());
+  }, []);
 
   const handleLoad = useCallback(() => {
     void loadFromSource({
@@ -245,6 +250,22 @@ function DirectSourcePlaylistContent() {
           mantém os canais em memória e envia apenas a URL final do canal para
           o Player Universal.
         </p>
+
+        <section className="mt-6 rounded-2xl border border-xf-red/40 bg-xf-red/10 p-5">
+          <p className="text-xs font-bold uppercase tracking-[0.3em] text-xf-red">
+            Liberação do dispositivo
+          </p>
+          <h2 className="mt-3 text-2xl font-black text-white">
+            ID deste dispositivo
+          </h2>
+          <p className="mt-3 break-all rounded-xl border border-white/10 bg-black/50 px-4 py-3 font-mono text-lg font-bold text-white">
+            {deviceIdentifier || 'Gerando ID...'}
+          </p>
+          <p className="mt-3 max-w-3xl text-sm text-xf-muted">
+            Informe este ID ao administrador para liberar a lista IPTV autorizada
+            deste dispositivo.
+          </p>
+        </section>
 
         <section className="mt-8 rounded-2xl border border-white/10 bg-black/60 p-6">
           <FocusableInput
