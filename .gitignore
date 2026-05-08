@@ -34,3 +34,7 @@ strengthen-*.cjs
 
 # Supabase local state
 supabase/.temp/
+
+# env files
+.env
+.env.*
