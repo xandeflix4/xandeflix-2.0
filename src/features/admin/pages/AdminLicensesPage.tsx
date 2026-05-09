@@ -4,13 +4,19 @@ import { AdminLayout } from '../components/AdminLayout';
 
 import {
   createAdminLicense,
+  listAdminLicenseDevices,
+  listAdminLicenseIptvSources,
   listAdminLicenses,
+  listAdminPlaybackSessions,
 } from '../services';
 
 import type {
   License,
+  LicenseDevice,
+  LicenseIptvSource,
   LicensePlanType,
   LicenseStatus,
+  PlaybackSession,
 } from '../types/admin.types';
 
 const licenseStatusLabels: Record<LicenseStatus, string> = {
@@ -67,6 +73,11 @@ export function AdminLicensesPage() {
   const [maxDevices, setMaxDevices] = useState(2);
   const [maxConcurrentStreams, setMaxConcurrentStreams] = useState(1);
   const [allowUserManageSources, setAllowUserManageSources] = useState(true);
+  const [selectedLicense, setSelectedLicense] = useState<License | null>(null);
+  const [licenseDevices, setLicenseDevices] = useState<LicenseDevice[]>([]);
+  const [licenseSources, setLicenseSources] = useState<LicenseIptvSource[]>([]);
+  const [playbackSessions, setPlaybackSessions] = useState<PlaybackSession[]>([]);
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
 
   const activeLicensesCount = useMemo(
     () => licenses.filter((license) => license.status === 'active').length,
@@ -91,6 +102,28 @@ export function AdminLicensesPage() {
   useEffect(() => {
     void loadLicenses();
   }, []);
+
+  async function loadLicenseDetails(license: License) {
+    try {
+      setIsLoadingDetails(true);
+      setErrorMessage(null);
+      setSelectedLicense(license);
+
+      const [devicesData, sourcesData, sessionsData] = await Promise.all([
+        listAdminLicenseDevices(license.id),
+        listAdminLicenseIptvSources(license.id),
+        listAdminPlaybackSessions(license.id),
+      ]);
+
+      setLicenseDevices(devicesData);
+      setLicenseSources(sourcesData);
+      setPlaybackSessions(sessionsData);
+    } catch {
+      setErrorMessage('Não foi possível carregar os detalhes da licença.');
+    } finally {
+      setIsLoadingDetails(false);
+    }
+  }
 
   async function handleCreateLicense(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -126,6 +159,10 @@ export function AdminLicensesPage() {
       setMaxDevices(2);
       setMaxConcurrentStreams(1);
       setAllowUserManageSources(true);
+      setSelectedLicense(null);
+      setLicenseDevices([]);
+      setLicenseSources([]);
+      setPlaybackSessions([]);
 
       await loadLicenses();
     } catch {
@@ -300,6 +337,7 @@ export function AdminLicensesPage() {
                     <th className="px-5 py-4 font-semibold">Dispositivos</th>
                     <th className="px-5 py-4 font-semibold">Telas</th>
                     <th className="px-5 py-4 font-semibold">Listas pelo usuário</th>
+                    <th className="px-5 py-4 font-semibold">Ações</th>
                   </tr>
                 </thead>
 
@@ -342,6 +380,16 @@ export function AdminLicensesPage() {
                       <td className="px-5 py-4 text-xf-muted">
                         {license.allow_user_manage_sources ? 'Sim' : 'Não'}
                       </td>
+
+                      <td className="px-5 py-4">
+                        <button
+                          type="button"
+                          onClick={() => void loadLicenseDetails(license)}
+                          className="rounded-xl bg-white/10 px-4 py-2 text-xs font-bold text-white transition hover:bg-white/20"
+                        >
+                          Ver detalhes
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -349,6 +397,130 @@ export function AdminLicensesPage() {
             </div>
           )}
         </div>
+
+        {selectedLicense ? (
+          <div className="grid gap-4 xl:grid-cols-3">
+            <article className="rounded-2xl border border-white/10 bg-white/5 p-5 xl:col-span-3">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-xf-muted">
+                Detalhes da licença
+              </p>
+              <h2 className="mt-2 text-2xl font-black">
+                {selectedLicense.license_code}
+              </h2>
+              <p className="mt-2 text-sm text-xf-muted">
+                {selectedLicense.label || 'Licença sem nome interno'}
+              </p>
+
+              {isLoadingDetails ? (
+                <p className="mt-4 text-sm text-xf-muted">
+                  Carregando detalhes...
+                </p>
+              ) : null}
+            </article>
+
+            <article className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <h3 className="text-lg font-black">Dispositivos</h3>
+              <p className="mt-1 text-sm text-xf-muted">
+                {licenseDevices.length} dispositivo(s) vinculado(s).
+              </p>
+
+              <div className="mt-4 flex flex-col gap-3">
+                {licenseDevices.length === 0 ? (
+                  <p className="text-sm text-xf-muted">
+                    Nenhum dispositivo ativado.
+                  </p>
+                ) : (
+                  licenseDevices.map((device) => (
+                    <div
+                      key={device.id}
+                      className="rounded-xl border border-white/10 bg-black/20 p-3"
+                    >
+                      <p className="font-bold text-white">
+                        {device.device_name || 'Dispositivo sem nome'}
+                      </p>
+                      <p className="mt-1 text-xs text-xf-muted">
+                        {device.device_identifier}
+                      </p>
+                      <p className="mt-1 text-xs text-xf-muted">
+                        {device.platform || 'Plataforma não informada'} ·{' '}
+                        {device.model || 'Modelo não informado'}
+                      </p>
+                      <p className="mt-2 text-xs font-bold text-white">
+                        {device.is_active ? 'Ativo' : 'Inativo'}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </article>
+
+            <article className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <h3 className="text-lg font-black">Fontes IPTV</h3>
+              <p className="mt-1 text-sm text-xf-muted">
+                {licenseSources.length} fonte(s) vinculada(s).
+              </p>
+
+              <div className="mt-4 flex flex-col gap-3">
+                {licenseSources.length === 0 ? (
+                  <p className="text-sm text-xf-muted">
+                    Nenhuma fonte IPTV vinculada.
+                  </p>
+                ) : (
+                  licenseSources.map((source) => (
+                    <div
+                      key={source.id}
+                      className="rounded-xl border border-white/10 bg-black/20 p-3"
+                    >
+                      <p className="font-bold text-white">{source.name}</p>
+                      <p className="mt-1 truncate text-xs text-xf-muted">
+                        {source.source_url}
+                      </p>
+                      <p className="mt-2 text-xs font-bold text-white">
+                        {source.type.toUpperCase()} ·{' '}
+                        {source.is_active ? 'Ativa' : 'Inativa'}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </article>
+
+            <article className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <h3 className="text-lg font-black">Sessões</h3>
+              <p className="mt-1 text-sm text-xf-muted">
+                {playbackSessions.length} sessão(ões) recentes.
+              </p>
+
+              <div className="mt-4 flex flex-col gap-3">
+                {playbackSessions.length === 0 ? (
+                  <p className="text-sm text-xf-muted">
+                    Nenhuma sessão registrada.
+                  </p>
+                ) : (
+                  playbackSessions.slice(0, 8).map((session) => (
+                    <div
+                      key={session.id}
+                      className="rounded-xl border border-white/10 bg-black/20 p-3"
+                    >
+                      <p className="font-bold text-white">
+                        {session.channel_name || 'Canal não informado'}
+                      </p>
+                      <p className="mt-1 text-xs text-xf-muted">
+                        {session.device_identifier}
+                      </p>
+                      <p className="mt-1 text-xs text-xf-muted">
+                        Início: {formatDateTime(session.started_at)}
+                      </p>
+                      <p className="mt-2 text-xs font-bold text-white">
+                        {session.status}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </article>
+          </div>
+        ) : null}
       </section>
     </AdminLayout>
   );
