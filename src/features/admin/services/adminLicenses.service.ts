@@ -32,6 +32,22 @@ export interface UpdateLicenseInput {
   notes?: string | null;
 }
 
+export interface CreateLicenseIptvSourceInput {
+  license_id: string;
+  name: string;
+  source_url: string;
+  type?: LicenseIptvSource['type'];
+  is_active?: boolean;
+  created_by?: LicenseIptvSource['created_by'];
+}
+
+export interface UpdateLicenseIptvSourceInput {
+  name?: string;
+  source_url?: string;
+  type?: LicenseIptvSource['type'];
+  is_active?: boolean;
+}
+
 export async function listAdminLicenses(): Promise<License[]> {
   const { data, error } = await supabase
     .from('licenses')
@@ -134,4 +150,49 @@ export async function listAdminPlaybackSessions(
   }
 
   return (data ?? []) as PlaybackSession[];
+}
+
+
+export async function createAdminLicenseIptvSource(
+  input: CreateLicenseIptvSourceInput,
+): Promise<LicenseIptvSource> {
+  const { data, error } = await supabase
+    .from('license_iptv_sources')
+    .insert({
+      license_id: input.license_id,
+      name: input.name.trim(),
+      source_url: input.source_url.trim(),
+      type: input.type ?? 'm3u',
+      is_active: input.is_active ?? true,
+      created_by: input.created_by ?? 'admin',
+    })
+    .select('*')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data as LicenseIptvSource;
+}
+
+export async function updateAdminLicenseIptvSource(
+  sourceId: string,
+  input: UpdateLicenseIptvSourceInput,
+): Promise<LicenseIptvSource> {
+  const { data, error } = await supabase
+    .from('license_iptv_sources')
+    .update({
+      ...input,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', sourceId)
+    .select('*')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data as LicenseIptvSource;
 }
