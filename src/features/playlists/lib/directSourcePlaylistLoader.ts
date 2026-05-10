@@ -1,4 +1,5 @@
 import { Capacitor, CapacitorHttp } from '@capacitor/core';
+import { fetchPlaylistViaProxy } from '../services/playlistProxy.service';
 
 import {
   parseM3uPlaylistProgressive,
@@ -332,7 +333,7 @@ async function runNativeHeadCheck(
   }
 }
 
-async function fetchResponseWithTimeout(sourceUrl: string) {
+async function fetchResponseWithTimeout(sourceUrl: string, useProxy = false) {
   const controller = new AbortController();
   const timeoutId = setTimeout(
     () => controller.abort(),
@@ -340,6 +341,10 @@ async function fetchResponseWithTimeout(sourceUrl: string) {
   );
 
   try {
+    if (useProxy) {
+      return await fetchPlaylistViaProxy(sourceUrl);
+    }
+
     const response = await fetch(sourceUrl, {
       method: 'GET',
       cache: 'no-store',
@@ -631,7 +636,11 @@ async function loadAndParsePlaylist(
   reportProgress(true);
 
   try {
-    const response = await fetchResponseWithTimeout(sourceUrl);
+    const response = await fetchResponseWithTimeout(
+      sourceUrl,
+      !Capacitor.isNativePlatform(),
+    );
+
     return await parsePlaylistFromResponse(response, progress, options, reportProgress);
   } catch (error) {
     if (shouldUseNativeHttpFallback(error)) {

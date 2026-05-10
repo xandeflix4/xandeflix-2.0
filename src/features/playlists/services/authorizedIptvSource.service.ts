@@ -1,10 +1,20 @@
 import { env } from '@/config/env';
 import { supabase } from '@/lib/supabase/supabaseClient';
 
+import { getStoredLicenseActivation } from '@/features/licensing/lib/licenseActivationStorage';
 import type { PlaylistSource } from '../types/playlist';
 
+export type AuthorizedIptvSourceMode = 'license' | 'legacy';
+
 export type AuthorizedIptvSource = {
-  client: {
+  mode?: AuthorizedIptvSourceMode;
+  license?: {
+    id: string;
+    code: string;
+    status: string;
+    expiresAt: string | null;
+  };
+  client?: {
     id: string;
     name: string;
     status: string;
@@ -12,8 +22,9 @@ export type AuthorizedIptvSource = {
   };
   device: {
     id: string;
-    name: string | null;
-    identifier: string | null;
+    name?: string | null;
+    identifier?: string | null;
+    deviceIdentifier?: string | null;
     platform: string | null;
   };
   source: {
@@ -45,35 +56,35 @@ function isAuthorizedIptvSourceSuccess(
   return Boolean(data?.ok);
 }
 
-export async function getAuthorizedIptvSource(
-  deviceIdentifier: string,
-): Promise<AuthorizedIptvSource> {
-  const normalizedDeviceIdentifier = deviceIdentifier.trim();
+async function postAuthorizedIptvSource(input: {
+  deviceIdentifier: string;
+  licenseCode?: string;
+  accessToken?: string;
+}): Promise<AuthorizedIptvSource> {
+  const headers: Record<string, string> = {
+    apikey: env.supabaseAnonKey,
+    'Content-Type': 'application/json',
+  };
 
-  if (!normalizedDeviceIdentifier) {
-    throw new Error('Identificador do dispositivo não informado.');
+  if (input.accessToken) {
+    headers.Authorization = `Bearer ${input.accessToken}`;
   }
 
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError || !session?.access_token) {
-    throw new Error('Sessão do usuário não encontrada.');
-  }
+  console.log('[XANDEFLIX_LICENSE_AUTH_PAYLOAD]', {
+    deviceIdentifier: input.deviceIdentifier,
+    hasLicenseCode: Boolean(input.licenseCode),
+    licenseCode: input.licenseCode,
+    hasAccessToken: Boolean(input.accessToken),
+  });
 
   const response = await fetch(
     `${env.supabaseUrl}/functions/v1/get-authorized-iptv-source`,
     {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${session.access_token}`,
-        apikey: env.supabaseAnonKey,
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify({
-        deviceIdentifier: normalizedDeviceIdentifier,
+        deviceIdentifier: input.deviceIdentifier,
+        licenseCode: input.licenseCode,
       }),
     },
   );
@@ -93,10 +104,59 @@ export async function getAuthorizedIptvSource(
   }
 
   return {
+    mode: data.mode,
+    license: data.license,
     client: data.client,
     device: data.device,
     source: data.source,
   };
+}
+
+export async function getAuthorizedIptvSource(input: {
+  deviceIdentifier: string;
+  licenseCode?: string;
+}): Promise<AuthorizedIptvSource> {
+  const normalizedDeviceIdentifier = input.deviceIdentifier.trim();
+  const explicitLicenseCode = input.licenseCode?.trim().toUpperCase();
+
+  if (!normalizedDeviceIdentifier) {
+    throw new Error('Identificador do dispositivo não informado.');
+  }
+
+  const storedActivation = getStoredLicenseActivation();
+
+  if (explicitLicenseCode) {
+    return postAuthorizedIptvSource({
+      deviceIdentifier: normalizedDeviceIdentifier,
+      licenseCode: explicitLicenseCode,
+    });
+  }
+
+  if (
+    storedActivation?.licenseCode?.trim() &&
+    storedActivation.deviceIdentifier === normalizedDeviceIdentifier
+  ) {
+    return postAuthorizedIptvSource({
+      deviceIdentifier: normalizedDeviceIdentifier,
+      licenseCode: storedActivation.licenseCode.trim().toUpperCase(),
+    });
+  }
+
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+
+  if (sessionError || !session?.access_token) {
+    throw new Error(
+      'Licença não ativada neste dispositivo e sessão do usuário não encontrada.',
+    );
+  }
+
+  return postAuthorizedIptvSource({
+    deviceIdentifier: normalizedDeviceIdentifier,
+    accessToken: session.access_token,
+  });
 }
 
 export function mapAuthorizedIptvSourceToPlaylistSource(

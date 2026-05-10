@@ -36,6 +36,38 @@ function normalizeText(value?: string | null) {
   return normalized ? normalized : null;
 }
 
+function serializeLicense(license: {
+  id: string;
+  license_code: string;
+  status: string;
+  expires_at: string | null;
+  max_devices: number;
+  max_concurrent_streams: number;
+  allow_user_manage_sources: boolean;
+}) {
+  return {
+    id: license.id,
+    licenseCode: license.license_code,
+    status: license.status,
+    expiresAt: license.expires_at,
+    maxDevices: license.max_devices,
+    maxConcurrentStreams: license.max_concurrent_streams,
+    allowUserManageSources: license.allow_user_manage_sources,
+  };
+}
+
+function serializeDevice(device: {
+  id: string;
+  device_identifier: string;
+  is_active: boolean;
+}) {
+  return {
+    id: device.id,
+    deviceIdentifier: device.device_identifier,
+    isActive: device.is_active,
+  };
+}
+
 Deno.serve(async (request) => {
   if (request.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -131,37 +163,17 @@ Deno.serve(async (request) => {
 
       return jsonResponse({
         ok: true,
-        license: {
-          id: license.id,
-          licenseCode: license.license_code,
-          status: license.status,
-          expiresAt: license.expires_at,
-          maxDevices: license.max_devices,
-          maxConcurrentStreams: license.max_concurrent_streams,
-          allowUserManageSources: license.allow_user_manage_sources,
-        },
-        device: {
-          id: updatedDevice.id,
-          deviceIdentifier: updatedDevice.device_identifier,
-          isActive: updatedDevice.is_active,
-        },
+        license: serializeLicense(license),
+        device: serializeDevice(updatedDevice),
       });
     }
 
-    const { count: activeDevicesCount, error: countError } = await supabaseAdmin
-      .from('license_devices')
-      .select('id', { count: 'exact', head: true })
-      .eq('license_id', license.id)
-      .eq('is_active', true);
-
-    if (countError) {
-      return jsonResponse({ ok: false, error: 'SERVER_ERROR', details: countError.message }, 500);
-    }
-
-    if ((activeDevicesCount ?? 0) >= license.max_devices) {
-      return jsonResponse({ ok: false, error: 'DEVICE_LIMIT_REACHED' }, 403);
-    }
-
+    /**
+     * Regra de negócio:
+     * A licença pode ser ativada em múltiplos aparelhos.
+     * O limite do plano deve bloquear apenas reprodução simultânea,
+     * dentro de start-playback-session, usando max_concurrent_streams.
+     */
     const { data: createdDevice, error: createDeviceError } = await supabaseAdmin
       .from('license_devices')
       .insert({
@@ -185,20 +197,8 @@ Deno.serve(async (request) => {
 
     return jsonResponse({
       ok: true,
-      license: {
-        id: license.id,
-        licenseCode: license.license_code,
-        status: license.status,
-        expiresAt: license.expires_at,
-        maxDevices: license.max_devices,
-        maxConcurrentStreams: license.max_concurrent_streams,
-        allowUserManageSources: license.allow_user_manage_sources,
-      },
-      device: {
-        id: createdDevice.id,
-        deviceIdentifier: createdDevice.device_identifier,
-        isActive: createdDevice.is_active,
-      },
+      license: serializeLicense(license),
+      device: serializeDevice(createdDevice),
     });
   } catch (error) {
     return jsonResponse({

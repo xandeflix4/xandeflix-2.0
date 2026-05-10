@@ -11,6 +11,11 @@ import { FocusableButton } from '@/components/tv/FocusableButton';
 import { FocusableInput } from '@/components/tv/FocusableInput';
 import { maskStreamUrl } from '@/lib/security/maskStreamUrl';
 import { getOrCreateDeviceIdentifier } from '../lib/deviceIdentifier';
+import { activateLicense } from '@/features/licensing/services/licenseActivation.service';
+import {
+  getStoredLicenseActivation,
+  saveStoredLicenseActivation,
+} from '@/features/licensing/lib/licenseActivationStorage';
 import {
   getAuthorizedIptvSource,
   mapAuthorizedIptvSourceToPlaylistSource,
@@ -69,6 +74,10 @@ function DirectSourcePlaylistContent() {
   const maskedSourceUrl = useMemo(() => maskStreamUrl(sourceUrl), [sourceUrl]);
   const [lastProgressAt, setLastProgressAt] = useState<string | null>(null);
   const [authorizedLoadError, setAuthorizedLoadError] = useState<string | null>(null);
+  const [licenseCode, setLicenseCode] = useState('');
+  const [licenseActivationStatus, setLicenseActivationStatus] = useState<string | null>(null);
+  const [licenseActivationError, setLicenseActivationError] = useState<string | null>(null);
+  const [isActivatingLicense, setIsActivatingLicense] = useState(false);
 
   const filteredChannels = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
@@ -99,7 +108,22 @@ function DirectSourcePlaylistContent() {
   const hasVisibleChannels = filteredChannels.length > 0;
 
   useEffect(() => {
-    setDeviceIdentifier(getOrCreateDeviceIdentifier());
+    const nextDeviceIdentifier = getOrCreateDeviceIdentifier();
+    const storedActivation = getStoredLicenseActivation();
+
+    setDeviceIdentifier(nextDeviceIdentifier);
+
+    if (storedActivation?.licenseCode) {
+      setLicenseCode(storedActivation.licenseCode ?? '');
+
+      if (storedActivation.deviceIdentifier === nextDeviceIdentifier) {
+        setLicenseActivationStatus('Licença já ativada neste dispositivo.');
+      } else {
+        setLicenseActivationStatus(
+          'Licença encontrada. Reative se este dispositivo mudou.',
+        );
+      }
+    }
   }, []);
 
   const handleLoad = useCallback(() => {
@@ -109,13 +133,66 @@ function DirectSourcePlaylistContent() {
     });
   }, [loadFromSource, sourceUrl]);
 
+  const handleActivateLicense = useCallback(() => {
+    setLicenseActivationError(null);
+    setLicenseActivationStatus(null);
+    setIsActivatingLicense(true);
+
+    void (async () => {
+      try {
+        const nextDeviceIdentifier = getOrCreateDeviceIdentifier();
+
+        const activation = await activateLicense({
+          licenseCode,
+          deviceIdentifier: nextDeviceIdentifier,
+          deviceName: 'Xandeflix App',
+          platform: 'web',
+        });
+
+        saveStoredLicenseActivation({
+          licenseCode: activation.license.code ?? licenseCode.trim().toUpperCase(),
+          deviceIdentifier: activation.device.deviceIdentifier,
+          licenseId: activation.license.id,
+          licenseDeviceId: activation.device.id,
+          activatedAt: new Date().toISOString(),
+        });
+
+        setDeviceIdentifier(activation.device.deviceIdentifier);
+        setLicenseCode(activation.license.code ?? '');
+        setLicenseActivationStatus('Licença ativada com sucesso.');
+      } catch (activationError) {
+        setLicenseActivationError(
+          activationError instanceof Error
+            ? activationError.message
+            : 'Não foi possível ativar a licença.',
+        );
+      } finally {
+        setIsActivatingLicense(false);
+      }
+    })();
+  }, [licenseCode]);
+
   const handleLoadAuthorizedSource = useCallback(() => {
     setAuthorizedLoadError(null);
 
     void (async () => {
       try {
         const deviceIdentifier = getOrCreateDeviceIdentifier();
-        const authorizedSource = await getAuthorizedIptvSource(deviceIdentifier);
+        const storedActivation = getStoredLicenseActivation();
+
+        console.log('[XANDEFLIX_LICENSE_RUNTIME]', {
+          stateLicenseCode: licenseCode,
+          storedLicenseCode: storedActivation?.licenseCode,
+        });
+
+        const resolvedLicenseCode =
+          storedActivation?.licenseCode?.trim() ||
+          licenseCode?.trim();
+
+        const authorizedSource = await getAuthorizedIptvSource({
+          deviceIdentifier,
+          licenseCode: resolvedLicenseCode,
+        });
         const playlistSource = mapAuthorizedIptvSourceToPlaylistSource(authorizedSource);
 
         setSourceUrl(playlistSource.url);
@@ -265,6 +342,62 @@ function DirectSourcePlaylistContent() {
             Informe este ID ao administrador para liberar a lista IPTV autorizada
             deste dispositivo.
           </p>
+        </section>
+
+
+        <section className="mt-6 rounded-2xl border border-white/10 bg-black/60 p-6">
+          <p className="text-xs font-bold uppercase tracking-[0.3em] text-xf-red">
+            Ativação por licença
+          </p>
+
+          <h2 className="mt-3 text-2xl font-black text-white">
+            Informe o código da licença
+          </h2>
+
+          <p className="mt-3 max-w-3xl text-sm text-xf-muted">
+            A licença será vinculada a este dispositivo e usada para carregar a fonte IPTV autorizada.
+          </p>
+
+          <div className="mt-5 flex flex-wrap items-end gap-4">
+            <label className="min-w-72 flex-1">
+              <span className="text-sm font-bold text-white">
+                Código de licença
+              </span>
+
+              <input
+                className="mt-2 w-full rounded-xl border border-white/10 bg-black px-4 py-3 text-lg font-bold uppercase text-white outline-none focus:border-xf-red"
+                placeholder="Ex.: XFLX-TEST-001"
+                value={licenseCode ?? ''}
+                onChange={(event) =>
+                  setLicenseCode(event.target.value.toUpperCase())
+                }
+              />
+            </label>
+
+            <FocusableButton
+              focusKey="direct-source-activate-license-button"
+              className="rounded-xl bg-xf-red px-6 py-4 text-lg font-black text-white disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={isActivatingLicense || !licenseCode?.trim()}
+              onEnterPress={handleActivateLicense}
+              onClick={handleActivateLicense}
+              onArrowPress={handleTopButtonsArrowPress}
+            >
+              {isActivatingLicense ? 'Ativando...' : 'Ativar licença'}
+            </FocusableButton>
+          </div>
+
+          {licenseActivationStatus ? (
+            <div className="mt-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-200">
+              {licenseActivationStatus}
+            </div>
+          ) : null}
+
+          {licenseActivationError ? (
+            <div className="mt-4 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-200">
+              <p className="font-bold">Falha na ativação</p>
+              <p className="mt-1">{licenseActivationError}</p>
+            </div>
+          ) : null}
         </section>
 
         <section className="mt-8 rounded-2xl border border-white/10 bg-black/60 p-6">

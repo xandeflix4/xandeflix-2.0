@@ -84,8 +84,20 @@ public class NativePlayerActivity extends AppCompatActivity {
     private void initializePlayer(String streamUrl) {
         DefaultHttpDataSource.Factory httpDataSourceFactory =
                 new DefaultHttpDataSource.Factory()
-                        .setUserAgent("Xandeflix/1.0 Android")
-                        .setAllowCrossProtocolRedirects(true);
+                        .setUserAgent(
+                                "Mozilla/5.0 (Linux; Android 12; Fire TV) AppleWebKit/537.36 Chrome/122.0.0.0 Mobile Safari/537.36"
+                        )
+                        .setAllowCrossProtocolRedirects(true)
+                        .setConnectTimeoutMs(30000)
+                        .setReadTimeoutMs(30000)
+                        .setDefaultRequestProperties(
+                                new java.util.HashMap<String, String>() {{
+                                    put("Accept", "*/*");
+                                    put("Connection", "keep-alive");
+                                    put("Origin", "https://xandeflix.app");
+                                    put("Referer", "https://xandeflix.app/");
+                                }}
+                        );
 
         DefaultDataSource.Factory dataSourceFactory =
                 new DefaultDataSource.Factory(this, httpDataSourceFactory);

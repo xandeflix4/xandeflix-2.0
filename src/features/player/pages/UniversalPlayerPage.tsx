@@ -18,6 +18,11 @@ import { createNativeVideoAdapter } from '../lib/nativeVideoAdapter';
 import { maskStreamUrl } from '@/lib/security/maskStreamUrl';
 import { logPlayerDebugEvent } from '../lib/playerDebug';
 import { prepareUniversalPlayerSource } from '../lib/playerFactory';
+import {
+  startPlaybackSession,
+  heartbeatPlaybackSession,
+  endPlaybackSession,
+} from '@/features/licensing/services/playbackSession.service';
 import type {
   PlayerError,
   PlayerTelemetryEvent,
@@ -97,6 +102,8 @@ export default function UniversalPlayerPage() {
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const adapterRef = useRef<UniversalPlayerAdapter | null>(null);
+  const playbackSessionIdRef = useRef<string | null>(null);
+  const heartbeatIntervalRef = useRef<number | null>(null);
 
   const [status, setStatus] = useState<PlayerStatus>('idle');
   const [playbackError, setPlaybackError] = useState<PlayerError | null>(null);
@@ -180,153 +187,205 @@ export default function UniversalPlayerPage() {
     };
   }, []);
 
-  useEffect(() => {
-    adapterRef.current?.destroy();
-    adapterRef.current = null;
-    setPlaybackError(null);
+    const endCurrentPlaybackSession = useCallback(() => {
+      if (heartbeatIntervalRef.current) {
+        window.clearInterval(heartbeatIntervalRef.current);
+        heartbeatIntervalRef.current = null;
+      }
 
-    if (!preparation.ok) {
-      setStatus(
-        preparation.error.code === 'ADAPTER_NOT_IMPLEMENTED'
-          ? 'unsupported'
-          : 'error',
-      );
+      const currentSessionId = playbackSessionIdRef.current;
+
+      if (!currentSessionId) {
+        return;
+      }
+
+      playbackSessionIdRef.current = null;
+      void endPlaybackSession(currentSessionId);
+    }, []);
+
+    const ensurePlaybackSessionStarted = useCallback(async () => {
+      if (playbackSessionIdRef.current) {
+        return;
+      }
+
+      const playbackSession = await startPlaybackSession({
+        channelName: title,
+        streamUrl,
+      });
+
+      playbackSessionIdRef.current = playbackSession.id;
+
       pushPlayerEvent(
-        'PREPARATION_FAILED',
-        'warn',
-        preparation.error.message,
+        'PLAYBACK_SESSION_STARTED',
+        'info',
+        'Sessão de reprodução iniciada para controle de telas simultâneas.',
         {
-          code: preparation.error.code,
+          sessionId: playbackSession.id,
+          channelName: title,
           url: maskedStreamUrl,
         },
       );
 
-      return;
-    }
+      heartbeatIntervalRef.current = window.setInterval(() => {
+        if (!playbackSessionIdRef.current) {
+          return;
+        }
 
-    const videoElement = videoRef.current;
+        void heartbeatPlaybackSession(playbackSessionIdRef.current);
+      }, 60000);
+    }, [maskedStreamUrl, pushPlayerEvent, streamUrl, title]);
 
-    if (!videoElement) {
-      setStatus('idle');
-      pushPlayerEvent(
-        'VIDEO_ELEMENT_MISSING',
-        'warn',
-        'Elemento de vídeo ainda não está disponível.',
-      );
+    useEffect(() => {
+      adapterRef.current?.destroy();
+      adapterRef.current = null;
+      endCurrentPlaybackSession();
+      setPlaybackError(null);
 
-      return;
-    }
-
-    if (!stream) {
-      setStatus('error');
-      setPlaybackError({
-          code: 'PLAYBACK_ERROR',
-          message: 'Tipo de stream não detectado.',
-        });
-      pushPlayerEvent(
-        'STREAM_KIND_MISSING',
-        'error',
-        'Tipo de stream não detectado após preparação.',
-      );
-
-      return;
-    }
-
-    const adapter =
-      stream.kind === 'hls'
-        ? createHlsAdapter(videoElement, {
-            onTelemetryEvent: pushTelemetryEvent,
-          })
-        : isNativeAndroidPlayerAvailable(stream.kind)
-          ? createNativeAndroidPlayerAdapter()
-          : stream.kind === 'mpegts'
-            ? createMpegTsAdapter(videoElement, {
-                onTelemetryEvent: pushTelemetryEvent,
-              })
-            : createNativeVideoAdapter(videoElement);
-
-    adapterRef.current = adapter;
-
-    let isCancelled = false;
-
-    setStatus('loading');
-    pushPlayerEvent(
-      'LOAD_START',
-      'info',
-      'Iniciando carga da fonte.',
-      {
-        kind: stream.kind,
-        url: maskedStreamUrl,
-        attempt: loadAttempt + 1,
-      },
-    );
-
-    adapter
-      .load({
-        url: streamUrl,
-        title,
-      })
-      .then(() => {
-        if (isCancelled) return;
-        setStatus('ready');
+      if (!preparation.ok) {
+        setStatus(
+          preparation.error.code === 'ADAPTER_NOT_IMPLEMENTED'
+            ? 'unsupported'
+            : 'error',
+        );
         pushPlayerEvent(
-          'LOAD_SUCCESS',
-          'info',
-          'Fonte carregada e pronta para reprodução.',
+          'PREPARATION_FAILED',
+          'warn',
+          preparation.error.message,
           {
-            kind: stream.kind,
+            code: preparation.error.code,
             url: maskedStreamUrl,
-            attempt: loadAttempt + 1,
           },
         );
-      })
-      .catch((error: unknown) => {
-        if (isCancelled) return;
 
-        const errorMessage = normalizePlaybackError(error);
+        return;
+      }
 
+      const videoElement = videoRef.current;
+
+      if (!videoElement) {
+        setStatus('idle');
+        pushPlayerEvent(
+          'VIDEO_ELEMENT_MISSING',
+          'warn',
+          'Elemento de vídeo ainda não está disponível.',
+        );
+
+        return;
+      }
+
+      if (!stream) {
         setStatus('error');
         setPlaybackError({
           code: 'PLAYBACK_ERROR',
-          message: `Não foi possível carregar a fonte de vídeo: ${errorMessage}`,
-          details: error,
+          message: 'Tipo de stream não detectado.',
         });
         pushPlayerEvent(
-          'LOAD_FAILED',
+          'STREAM_KIND_MISSING',
           'error',
-          'Falha ao carregar a fonte.',
-          {
-            kind: stream.kind,
-            url: maskedStreamUrl,
-            message: errorMessage,
-            attempt: loadAttempt + 1,
-          },
+          'Tipo de stream não detectado após preparação.',
         );
-      });
 
-    return () => {
-      isCancelled = true;
-      adapter.destroy();
+        return;
+      }
+
+      const adapter =
+        stream.kind === 'hls'
+          ? createHlsAdapter(videoElement, {
+              onTelemetryEvent: pushTelemetryEvent,
+            })
+          : isNativeAndroidPlayerAvailable(stream.kind)
+            ? createNativeAndroidPlayerAdapter()
+            : stream.kind === 'mpegts'
+              ? createMpegTsAdapter(videoElement, {
+                  onTelemetryEvent: pushTelemetryEvent,
+                })
+              : createNativeVideoAdapter(videoElement);
+
+      adapterRef.current = adapter;
+
+      let isCancelled = false;
+
+      setStatus('loading');
       pushPlayerEvent(
-        'ADAPTER_DESTROYED',
+        'LOAD_START',
         'info',
-        'Adapter destruído no cleanup da rota.',
+        'Iniciando carga da fonte.',
+        {
+          kind: stream.kind,
+          url: maskedStreamUrl,
+          attempt: loadAttempt + 1,
+        },
       );
 
-      if (adapterRef.current === adapter) {
-        adapterRef.current = null;
-      }
-    };
-  }, [
-    loadAttempt,
-    preparation,
-    pushPlayerEvent,
-    pushTelemetryEvent,
-    stream,
-    streamUrl,
-    maskedStreamUrl,
-    title,
-  ]);
+      adapter
+        .load({
+          url: streamUrl,
+          title,
+        })
+        .then(() => {
+          if (isCancelled) return;
+
+          setStatus('ready');
+          pushPlayerEvent(
+            'LOAD_SUCCESS',
+            'info',
+            'Fonte carregada e pronta para reprodução.',
+            {
+              kind: stream.kind,
+              url: maskedStreamUrl,
+              attempt: loadAttempt + 1,
+            },
+          );
+        })
+        .catch((error: unknown) => {
+          if (isCancelled) return;
+
+          const errorMessage = normalizePlaybackError(error);
+
+          setStatus('error');
+          setPlaybackError({
+            code: 'PLAYBACK_ERROR',
+            message: `Não foi possível carregar a fonte de vídeo: ${errorMessage}`,
+            details: error,
+          });
+          pushPlayerEvent(
+            'LOAD_FAILED',
+            'error',
+            'Falha ao carregar a fonte.',
+            {
+              kind: stream.kind,
+              url: maskedStreamUrl,
+              message: errorMessage,
+              attempt: loadAttempt + 1,
+            },
+          );
+        });
+
+      return () => {
+        isCancelled = true;
+        endCurrentPlaybackSession();
+        adapter.destroy();
+        pushPlayerEvent(
+          'ADAPTER_DESTROYED',
+          'info',
+          'Adapter destruído no cleanup da rota.',
+        );
+
+        if (adapterRef.current === adapter) {
+          adapterRef.current = null;
+        }
+      };
+    }, [
+      endCurrentPlaybackSession,
+      loadAttempt,
+      preparation,
+      pushPlayerEvent,
+      pushTelemetryEvent,
+      stream,
+      streamUrl,
+      maskedStreamUrl,
+      title,
+    ]);
 
   const handleTogglePlayback = useCallback(async () => {
     const adapter = adapterRef.current;
@@ -343,6 +402,7 @@ export default function UniversalPlayerPage() {
     if (usesNativeAndroidPlayer) {
       try {
         setStatus('loading');
+        await ensurePlaybackSessionStarted();
         await adapter.play();
         setStatus('ready');
         pushPlayerEvent(
@@ -381,6 +441,7 @@ export default function UniversalPlayerPage() {
 
     try {
       setStatus('loading');
+      await ensurePlaybackSessionStarted();
       await adapter.play();
       setStatus('playing');
       pushPlayerEvent(
@@ -406,7 +467,7 @@ export default function UniversalPlayerPage() {
         },
       );
     }
-  }, [pushPlayerEvent, status, usesNativeAndroidPlayer]);
+  }, [ensurePlaybackSessionStarted, pushPlayerEvent, status, usesNativeAndroidPlayer]);
 
   const handleRetry = useCallback(() => {
     setPlaybackError(null);
