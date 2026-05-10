@@ -5,8 +5,12 @@ const config: CapacitorConfig = {
   appName: 'Xandeflix',
   webDir: 'dist',
   backgroundColor: '#050505',
+  loggingBehavior: 'none',
 
   plugins: {
+    CapacitorHttp: {
+      enabled: true,
+    },
     StatusBar: {
       backgroundColor: '#050505',
       style: 'DARK',

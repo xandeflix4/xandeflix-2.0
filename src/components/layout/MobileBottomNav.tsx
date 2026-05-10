@@ -1,4 +1,6 @@
 import { Home, Search, Settings, Tv } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
 import { spatialDebug } from '@/lib/spatial/spatialDebug';
 import { FocusableButton } from '../tv/FocusableButton';
 import { FocusableSection } from '../tv/FocusableSection';
@@ -8,6 +10,7 @@ const mobileItems = [
     label: 'Início',
     icon: Home,
     navId: 'mobile-home',
+    path: '/',
   },
   {
     label: 'Buscar',
@@ -18,6 +21,7 @@ const mobileItems = [
     label: 'Canais',
     icon: Tv,
     navId: 'mobile-channels',
+    path: '/playlists/direct-source',
   },
   {
     label: 'Ajustes',
@@ -27,6 +31,8 @@ const mobileItems = [
 ];
 
 export function MobileBottomNav() {
+  const navigate = useNavigate();
+
   return (
     <FocusableSection
       focusKey="mobile-bottom-nav-section"
@@ -35,14 +41,22 @@ export function MobileBottomNav() {
       {mobileItems.map((item) => {
         const Icon = item.icon;
 
+        const handlePress = () => {
+          if (item.path) {
+            navigate(item.path);
+            return;
+          }
+
+          spatialDebug('sidebar', 'Mobile menu:', item.label);
+        };
+
         return (
           <FocusableButton
             key={item.navId}
             focusKey={item.navId}
             className="flex flex-col items-center justify-center gap-1 rounded-xl text-xs font-semibold text-xf-muted"
-            onEnterPress={() => {
-              spatialDebug('sidebar', 'Mobile menu:', item.label);
-            }}
+            onEnterPress={handlePress}
+            onClick={handlePress}
           >
             <Icon size={22} />
             <span>{item.label}</span>

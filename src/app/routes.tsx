@@ -1,9 +1,31 @@
-import type { ReactNode } from 'react';
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useState,
+  type ReactNode,
+} from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import { useAuth } from './providers/AuthProvider';
+import { isCurrentUserAdmin } from '../features/admin/services';
+import { AdminClientsPage } from '../features/admin/pages/AdminClientsPage';
+import { AdminDevicesPage } from '../features/admin/pages/AdminDevicesPage';
+import { AdminIptvSourcesPage } from '../features/admin/pages/AdminIptvSourcesPage';
+import { AdminLicensesPage } from '../features/admin/pages/AdminLicensesPage';
+import { AdminAuditLogsPage } from '../features/admin/pages/AdminAuditLogsPage';
+import { AdminDashboardPage } from '../features/admin/pages/AdminDashboardPage';
 import { LoginPage } from '../features/auth/pages/LoginPage';
 import { CatalogPage } from '../features/catalog/pages/CatalogPage';
+import { PlaylistRuntimeProvider } from '../features/playlists/providers/PlaylistRuntimeProvider';
+
+const UniversalPlayerPage = lazy(
+  () => import('../features/player/pages/UniversalPlayerPage'),
+);
+
+const DirectSourcePlaylistPage = lazy(
+  () => import('../features/playlists/pages/DirectSourcePlaylistPage'),
+);
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -23,23 +45,175 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
   return children;
 }
 
+function AdminRoute({ children }: { children: ReactNode }) {
+  const { isAuthenticated, isLoading } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isCheckingAdmin, setIsCheckingAdmin] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function checkAdminAccess() {
+      if (isLoading) {
+        return;
+      }
+
+      if (!isAuthenticated) {
+        if (isMounted) {
+          setIsAdmin(false);
+          setIsCheckingAdmin(false);
+        }
+
+        return;
+      }
+
+      try {
+        const hasAdminAccess = await isCurrentUserAdmin();
+
+        if (isMounted) {
+          setIsAdmin(hasAdminAccess);
+        }
+      } catch {
+        if (isMounted) {
+          setIsAdmin(false);
+        }
+      } finally {
+        if (isMounted) {
+          setIsCheckingAdmin(false);
+        }
+      }
+    }
+
+    setIsCheckingAdmin(true);
+    void checkAdminAccess();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isAuthenticated, isLoading]);
+
+  if (isLoading || isCheckingAdmin) {
+    return (
+      <main className="xf-app flex min-h-screen items-center justify-center">
+        <p className="text-xl font-semibold text-xf-muted">
+          Verificando acesso administrativo...
+        </p>
+      </main>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+}
+
+function RouteLoader() {
+  return (
+    <main className="xf-app flex min-h-screen items-center justify-center">
+      <p className="text-xl font-semibold text-xf-muted">Carregando rota...</p>
+    </main>
+  );
+}
+
 export function AppRoutes() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
+      <PlaylistRuntimeProvider>
+        <Suspense fallback={<RouteLoader />}>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
 
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <CatalogPage />
-            </ProtectedRoute>
-          }
-        />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <CatalogPage />
+                </ProtectedRoute>
+              }
+            />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminDashboardPage />
+                </AdminRoute>
+              }
+            />
+
+            <Route
+              path="/admin/clients"
+              element={
+                <AdminRoute>
+                  <AdminClientsPage />
+                </AdminRoute>
+              }
+            />
+
+            <Route
+              path="/admin/devices"
+              element={
+                <AdminRoute>
+                  <AdminDevicesPage />
+                </AdminRoute>
+              }
+            />
+
+            <Route
+              path="/admin/licenses"
+              element={
+                <AdminRoute>
+                  <AdminLicensesPage />
+                </AdminRoute>
+              }
+            />
+
+            <Route
+              path="/admin/iptv-sources"
+              element={
+                <AdminRoute>
+                  <AdminIptvSourcesPage />
+                </AdminRoute>
+              }
+            />
+
+            <Route
+              path="/admin/audit-logs"
+              element={
+                <AdminRoute>
+                  <AdminAuditLogsPage />
+                </AdminRoute>
+              }
+            />
+
+            <Route
+              path="/player"
+              element={
+                <ProtectedRoute>
+                  <UniversalPlayerPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/playlists/direct-source"
+              element={
+                <ProtectedRoute>
+                  <DirectSourcePlaylistPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </PlaylistRuntimeProvider>
     </BrowserRouter>
   );
 }

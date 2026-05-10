@@ -22,3 +22,19 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local tools / debug artifacts
+.tools/
+logcat-*.txt
+live-logcat-*.txt
+*-dpad-*.cjs
+fix-*.cjs
+add-*.cjs
+strengthen-*.cjs
+
+# Supabase local state
+supabase/.temp/
+
+# env files
+.env
+.env.*
