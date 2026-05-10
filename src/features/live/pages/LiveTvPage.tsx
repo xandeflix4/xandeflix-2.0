@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "@/app/providers/AuthProvider";
@@ -52,11 +52,11 @@ export default function LiveTvPage() {
     null,
   );
   const [sourceLoadError, setSourceLoadError] = useState<string | null>(null);
-  const [hasRequestedSource, setHasRequestedSource] = useState(false);
+  const hasRequestedSourceRef = useRef(false);
 
   useEffect(() => {
     if (
-      hasRequestedSource ||
+      hasRequestedSourceRef.current ||
       status === "loading" ||
       status === "ready" ||
       channels.length > 0
@@ -64,8 +64,7 @@ export default function LiveTvPage() {
       return;
     }
 
-    setHasRequestedSource(true);
-    setSourceLoadError(null);
+    hasRequestedSourceRef.current = true;
 
     void (async () => {
       try {
@@ -84,11 +83,11 @@ export default function LiveTvPage() {
         setSourceLoadError(
           loadError instanceof Error
             ? loadError.message
-            : "NÃ£o foi possÃ­vel carregar os canais ao vivo.",
+            : "Não foi possível carregar os canais ao vivo.",
         );
       }
     })();
-  }, [channels.length, hasRequestedSource, loadFromSource, status]);
+  }, [channels.length, loadFromSource, status]);
 
   const groups = useMemo<ChannelGroup[]>(() => {
     const groupMap = new Map<string, number>();
@@ -104,13 +103,11 @@ export default function LiveTvPage() {
     }));
   }, [channels]);
 
-  const activeGroupName = selectedGroupName ?? groups[0]?.name ?? null;
+  const activeGroupName =
+    selectedGroupName && groups.some((group) => group.name === selectedGroupName)
+      ? selectedGroupName
+      : groups[0]?.name ?? null;
 
-  useEffect(() => {
-    if (!selectedGroupName && groups[0]?.name) {
-      setSelectedGroupName(groups[0].name);
-    }
-  }, [groups, selectedGroupName]);
 
   const activeGroupChannels = useMemo(() => {
     if (!activeGroupName) {
@@ -276,14 +273,14 @@ export default function LiveTvPage() {
                 </h2>
 
                 <p className="mt-3 text-sm text-xf-muted">
-                  A prÃ©via inline MPEG-TS serÃ¡ ativada no prÃ³ximo ciclo de forma
+                  A prévia inline MPEG-TS será ativada no próximo ciclo de forma
                   controlada. Por enquanto, clique novamente no mesmo canal para
                   abrir em tela cheia.
                 </p>
 
                 {isLoading && progress ? (
                   <p className="mt-5 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-xf-muted">
-                    {getProgressLabel(progress.phase)} Â·{" "}
+                    {getProgressLabel(progress.phase)} ·{" "}
                     {progress.channelsParsed} canais processados
                   </p>
                 ) : null}
@@ -305,7 +302,7 @@ export default function LiveTvPage() {
 
           <div className="rounded-2xl border border-white/10 bg-black/70 p-4">
             <p className="text-xs font-black uppercase tracking-[0.35em] text-white">
-              Guia de programaÃ§Ã£o
+              Guia de programação
             </p>
           </div>
         </section>
