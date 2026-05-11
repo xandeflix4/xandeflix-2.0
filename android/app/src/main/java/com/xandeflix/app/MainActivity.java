@@ -46,8 +46,7 @@ public class MainActivity extends BridgeActivity {
         // Tenta remover o highlight em versões anteriores via CSS ou propriedades de desenho
         view.setBackgroundColor(Color.TRANSPARENT);
 
-        view.requestFocus();
-        Log.d(TAG, "WebView configurado para foco");
+        Log.d(TAG, "WebView configurado sem foco nativo");
     }
 
     @Override
