@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { App } from '@capacitor/app';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { FocusableButton } from '@/components/tv/FocusableButton';
@@ -524,6 +525,41 @@ export default function UniversalPlayerPage() {
     }
 
     navigate('/');
+  }, [endCurrentPlaybackSession, navigate]);
+
+  useEffect(() => {
+    let isActive = true;
+    let listener: { remove: () => Promise<void> } | null = null;
+
+    void App.addListener('backButton', ({ canGoBack }) => {
+      if (!isActive) {
+        return;
+      }
+
+      endCurrentPlaybackSession();
+
+      if (canGoBack || window.history.length > 1) {
+        navigate(-1);
+        return;
+      }
+
+      navigate('/');
+    }).then((handle) => {
+      if (!isActive) {
+        void handle.remove();
+        return;
+      }
+
+      listener = handle;
+    });
+
+    return () => {
+      isActive = false;
+
+      if (listener) {
+        void listener.remove();
+      }
+    };
   }, [endCurrentPlaybackSession, navigate]);
 
   return (

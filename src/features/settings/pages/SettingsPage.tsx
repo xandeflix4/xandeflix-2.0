@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
+import { setFocus } from '@noriginmedia/norigin-spatial-navigation';
 
 import { AppShell } from '@/components/layout/AppShell';
 import { FocusableButton } from '@/components/tv/FocusableButton';
+import { FocusableSection } from '@/components/tv/FocusableSection';
 import { FocusableInput } from '@/components/tv/FocusableInput';
+import { TvKeyboardModal } from '@/components/tv/keyboard/TvKeyboardModal';
 import { useAuth } from '@/app/providers/AuthProvider';
 import { getStoredLicenseActivation, saveStoredLicenseActivation } from '@/features/licensing/lib/licenseActivationStorage';
 import { activateLicense } from '@/features/licensing/services/licenseActivation.service';
@@ -18,6 +21,7 @@ export default function SettingsPage() {
   const [activationStatus, setActivationStatus] = useState<string | null>(null);
   const [activationError, setActivationError] = useState<string | null>(null);
   const [isActivating, setIsActivating] = useState(false);
+  const [keyboardTarget, setKeyboardTarget] = useState<'license' | 'source' | null>(null);
 
   const maskedSourceUrl = useMemo(() => maskStreamUrl(sourceUrl), [sourceUrl]);
 
@@ -64,7 +68,7 @@ export default function SettingsPage() {
 
         setDeviceIdentifier(activation.device.deviceIdentifier);
         setLicenseCode(activation.license.code ?? '');
-        setActivationStatus('Licença ativada com sucesso. Volte para Canais para carregar a lista autorizada.');
+        setActivationStatus('Licença ativada com sucesso. A lista autorizada será carregada ao abrir Canais ao Vivo. Aguarde alguns instantes se a grade ainda estiver sendo montada.');
       } catch (error) {
         setActivationError(
           error instanceof Error ? error.message : 'Não foi possível ativar a licença.',
@@ -77,7 +81,10 @@ export default function SettingsPage() {
 
   return (
     <AppShell onSignOut={() => void signOut()} hideHeaderOnTv>
-      <section className="mx-auto max-w-5xl text-white">
+      <section
+        className="xf-settings-page mx-auto max-w-5xl text-white"
+        data-settings-page-root="true"
+      >
         <p className="text-xs font-black uppercase tracking-[0.35em] text-xf-red">
           Configurações
         </p>
@@ -90,7 +97,10 @@ export default function SettingsPage() {
           Use esta tela para liberar o acesso aos canais, filmes e séries neste aparelho.
         </p>
 
-        <section className="mt-6 rounded-2xl border border-xf-red/40 bg-xf-red/10 p-5">
+        <FocusableSection
+          focusKey="settings-device-id-card"
+          className="mt-6 rounded-2xl border border-xf-red/40 bg-xf-red/10 p-5"
+        >
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-xf-red">
             Código do aparelho
           </p>
@@ -106,7 +116,7 @@ export default function SettingsPage() {
           <p className="mt-3 max-w-3xl text-sm text-xf-muted">
             O provedor pode usar este código no painel gestor para vincular uma fonte IPTV autorizada a este aparelho.
           </p>
-        </section>
+        </FocusableSection>
 
         <section className="mt-6 rounded-2xl border border-white/10 bg-black/60 p-6">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-xf-red">
@@ -121,14 +131,35 @@ export default function SettingsPage() {
             Ao ativar, o aplicativo salva a licença neste aparelho e passa a carregar a fonte autorizada automaticamente na tela Canais.
           </p>
 
-          <div className="mt-5 flex flex-wrap items-end gap-4">
+          <div className="mt-5 grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
             <div className="min-w-72 flex-1">
               <FocusableInput
                 focusKey="settings-license-code-input"
                 label="Código de ativação"
                 placeholder="Ex.: XFLX-TEST-001"
                 value={licenseCode}
+                readOnly
+                onEnterPress={() => setKeyboardTarget('license')}
+                onClick={() => setKeyboardTarget('license')}
                 onChange={(event) => setLicenseCode(event.target.value.toUpperCase())}
+                onArrowPress={(direction) => {
+                  if (direction === 'up') {
+                    setFocus('settings-device-id-card');
+
+                    requestAnimationFrame(() => {
+                      document
+                        .querySelector('[data-settings-page-root="true"]')
+                        ?.scrollIntoView({
+                          behavior: 'smooth',
+                          block: 'start',
+                        });
+                    });
+
+                    return false;
+                  }
+
+                  return true;
+                }}
                 selectTextOnEnter
               />
             </div>
@@ -158,6 +189,18 @@ export default function SettingsPage() {
           ) : null}
         </section>
 
+        {isActivating ? (
+          <div className="mt-4 rounded-xl border border-xf-red/30 bg-xf-red/10 p-4 text-sm font-bold text-red-100">
+            Ativando licença e carregando conteúdo autorizado. Aguarde alguns instantes...
+          </div>
+        ) : null}
+
+        {isActivating ? (
+          <div className="mt-4 rounded-xl border border-xf-red/30 bg-xf-red/10 p-4 text-sm font-bold text-red-100">
+            Ativando licença e carregando conteúdo autorizado. Aguarde alguns instantes...
+          </div>
+        ) : null}
+
         <section className="mt-6 rounded-2xl border border-white/10 bg-black/60 p-6">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-xf-red">
             URL manual
@@ -177,6 +220,9 @@ export default function SettingsPage() {
               label="URL da lista IPTV"
               placeholder="Cole aqui a URL M3U/M3U Plus..."
               value={sourceUrl}
+              readOnly
+              onEnterPress={() => setKeyboardTarget('source')}
+              onClick={() => setKeyboardTarget('source')}
               onChange={(event) => setSourceUrl(event.target.value)}
               selectTextOnEnter
             />
@@ -189,6 +235,32 @@ export default function SettingsPage() {
           ) : null}
         </section>
       </section>
+
+      <TvKeyboardModal
+        isOpen={keyboardTarget === 'license'}
+        title="Código de ativação"
+        initialValue={licenseCode}
+        mode="text"
+        returnFocusKey="settings-license-code-input"
+        onCancel={() => setKeyboardTarget(null)}
+        onConfirm={(nextValue) => {
+          setLicenseCode(nextValue.toUpperCase());
+          setKeyboardTarget(null);
+        }}
+      />
+
+      <TvKeyboardModal
+        isOpen={keyboardTarget === 'source'}
+        title="URL da lista IPTV"
+        initialValue={sourceUrl}
+        mode="url"
+        returnFocusKey="settings-source-url-input"
+        onCancel={() => setKeyboardTarget(null)}
+        onConfirm={(nextValue) => {
+          setSourceUrl(nextValue);
+          setKeyboardTarget(null);
+        }}
+      />
     </AppShell>
   );
 }
