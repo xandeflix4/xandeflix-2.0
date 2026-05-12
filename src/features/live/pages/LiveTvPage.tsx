@@ -151,9 +151,9 @@ export default function LiveTvPage() {
     <AppShell
       onSignOut={() => void signOut()}
       hideHeaderOnTv
-      mainClassName="px-0 pt-0 pb-0 pr-4 md:px-0 md:pt-0 md:pb-0 md:pr-4 lg:px-0 lg:pt-0 lg:pb-0 lg:pr-4"
+      mainClassName="px-0 pt-0 pb-0 pr-0 md:px-0 md:pt-0 md:pb-0 md:pr-0 lg:px-0 lg:pt-0 lg:pb-0 lg:pr-0"
     >
-      <section className="xf-live-tv-layout grid min-h-screen md:h-[125vh] gap-x-0 gap-y-4 text-white">
+      <section className="xf-live-tv-page xf-live-tv-layout grid min-h-screen gap-x-0 gap-y-4 text-white">
         <aside className="h-full min-h-full bg-black/70 p-3">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-xf-red">
             Grupos
@@ -259,7 +259,7 @@ export default function LiveTvPage() {
           </div>
         </aside>
 
-        <section className="flex min-h-[calc(100vh-2rem)] min-w-0 flex-col gap-4 md:pl-4">
+        <section className="xf-live-tv-preview flex min-h-[calc(100vh-2rem)] min-w-0 flex-col gap-4 md:pl-4">
           <div className="relative aspect-video overflow-hidden bg-zinc-950">
             <div className="absolute inset-0 flex items-center justify-center bg-black">
               <div className="h-full w-full bg-zinc-950/95 p-8 text-center">

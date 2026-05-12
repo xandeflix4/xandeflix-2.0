@@ -154,7 +154,11 @@ button {
 }
 
 .xf-app[data-device-form-factor="tv"] .xf-live-tv-layout {
-  grid-template-columns: minmax(14.375rem, 16.25rem) minmax(17.8125rem, 21.25rem) minmax(0, 1fr);
+  grid-template-columns: 20% 30% 50%;
+}
+
+.xf-app[data-device-form-factor="tv"] .xf-live-tv-preview {
+  display: flex;
 }
 
 .xf-app[data-device-form-factor="tablet"] .xf-live-tv-layout {
@@ -286,4 +290,32 @@ button {
   padding-right: 2.25rem;
   scroll-padding-left: 1.75rem;
   scroll-padding-right: 2.25rem;
+}
+
+/* Live TV em TV/Fire Stick: reduz proporção visual da tela sem afetar tablet. */
+.xf-app[data-device-form-factor="tv"] .xf-live-tv-page {
+  font-size: 55%;
+}
+
+.xf-app[data-device-form-factor="tv"] .xf-live-tv-page aside {
+  padding: 0.45rem;
+}
+
+.xf-app[data-device-form-factor="tv"] .xf-live-tv-page .xf-live-tv-preview {
+  gap: 0.45rem;
+  padding-left: 0.35rem;
+}
+
+.xf-app[data-device-form-factor="tv"] .xf-live-tv-page .xf-live-tv-preview > div {
+  padding: 0.45rem;
+}
+
+.xf-app[data-device-form-factor="tv"] .xf-live-tv-page h1,
+.xf-app[data-device-form-factor="tv"] .xf-live-tv-page h2 {
+  font-size: 60%;
+}
+
+.xf-app[data-device-form-factor="tv"] .xf-live-tv-page button {
+  padding-block: 0.4rem;
+  padding-inline: 0.55rem;
 }
