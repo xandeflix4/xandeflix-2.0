@@ -151,6 +151,34 @@ export function AdminAppInstallationsPage() {
     }
   }
 
+  async function handleUnblockInstallation(installation: AppInstallation) {
+    const confirmed = window.confirm(
+      `Deseja desbloquear a instalação ${installation.device_identifier}? Ela voltará para o status inativo e poderá ser regularizada pelo fluxo do app.`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setActionMessage(null);
+    setErrorMessage(null);
+    setUpdatingInstallationId(installation.id);
+
+    try {
+      await updateAdminAppInstallationStatus({
+        installationId: installation.id,
+        status: 'inactive',
+      });
+
+      setActionMessage('Instalação desbloqueada com sucesso.');
+      await loadInstallations();
+    } catch {
+      setErrorMessage('Não foi possível desbloquear a instalação.');
+    } finally {
+      setUpdatingInstallationId(null);
+    }
+  }
+
   const summary = useMemo(() => {
     return installations.reduce(
       (acc, installation) => {
@@ -317,19 +345,29 @@ export function AdminAppInstallationsPage() {
                       </td>
 
                       <td className="px-5 py-4">
-                        <button
-                          type="button"
-                          onClick={() => void handleBlockInstallation(installation)}
-                          disabled={
-                            installation.installation_status === 'blocked' ||
-                            updatingInstallationId === installation.id
-                          }
-                          className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs font-black text-red-100 transition hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          {updatingInstallationId === installation.id
-                            ? 'Bloqueando...'
-                            : 'Bloquear'}
-                        </button>
+                        {installation.installation_status === 'blocked' ? (
+                          <button
+                            type="button"
+                            onClick={() => void handleUnblockInstallation(installation)}
+                            disabled={updatingInstallationId === installation.id}
+                            className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-black text-emerald-100 transition hover:bg-emerald-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            {updatingInstallationId === installation.id
+                              ? 'Desbloqueando...'
+                              : 'Desbloquear'}
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => void handleBlockInstallation(installation)}
+                            disabled={updatingInstallationId === installation.id}
+                            className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs font-black text-red-100 transition hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            {updatingInstallationId === installation.id
+                              ? 'Bloqueando...'
+                              : 'Bloquear'}
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
