@@ -52,6 +52,35 @@ function getBearerToken(request: Request) {
   return token;
 }
 
+function getAuditAction(previousStatus: string | null, nextStatus: AppInstallationStatus) {
+  if (nextStatus === 'blocked') {
+    return 'app_installation_blocked';
+  }
+
+  if (nextStatus === 'pending_uninstall') {
+    return 'app_installation_removal_requested';
+  }
+
+  if (nextStatus === 'manually_marked_uninstalled') {
+    return 'app_installation_manually_marked_uninstalled';
+  }
+
+  if (nextStatus === 'inactive') {
+    if (previousStatus === 'blocked') {
+      return 'app_installation_unblocked';
+    }
+
+    if (
+      previousStatus === 'pending_uninstall' ||
+      previousStatus === 'manually_marked_uninstalled'
+    ) {
+      return 'app_installation_reactivated';
+    }
+  }
+
+  return 'app_installation_status_updated';
+}
+
 Deno.serve(async (request) => {
   if (request.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -180,7 +209,7 @@ Deno.serve(async (request) => {
       .from('audit_logs')
       .insert({
         actor_id: actor.id,
-        action: 'app_installation_status_updated',
+        action: getAuditAction(existingInstallation.installation_status, status),
         entity: 'app_installations',
         entity_id: installation.id,
         metadata: {
