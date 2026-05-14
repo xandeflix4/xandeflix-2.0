@@ -24,6 +24,22 @@ export interface UpdateAdminClientStatusResponse {
   details?: string;
 }
 
+export interface UpdateAdminClientDetailsInput {
+  clientId: string;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  expires_at?: string | null;
+  notes?: string | null;
+}
+
+export interface UpdateAdminClientDetailsResponse {
+  ok: boolean;
+  client?: Client;
+  error?: string;
+  details?: string;
+}
+
 export async function listAdminClients(): Promise<Client[]> {
   const { data, error } = await supabase
     .from('clients')
@@ -96,6 +112,40 @@ export async function updateAdminClientStatus({
 
   if (!data?.ok || !data.client) {
     throw new Error(data?.error ?? 'UPDATE_CLIENT_STATUS_FAILED');
+  }
+
+  return data.client;
+}
+
+export async function updateAdminClientDetails({
+  clientId,
+  name,
+  email,
+  phone,
+  expires_at,
+  notes,
+}: UpdateAdminClientDetailsInput): Promise<Client> {
+  const { data, error } =
+    await supabase.functions.invoke<UpdateAdminClientDetailsResponse>(
+      'update-client-details',
+      {
+        body: {
+          clientId,
+          name,
+          email,
+          phone,
+          expires_at,
+          notes,
+        },
+      },
+    );
+
+  if (error) {
+    throw error;
+  }
+
+  if (!data?.ok || !data.client) {
+    throw new Error(data?.error ?? 'UPDATE_CLIENT_DETAILS_FAILED');
   }
 
   return data.client;
