@@ -66,11 +66,25 @@ export interface CreateLicenseIptvSourceInput {
   created_by?: LicenseIptvSource['created_by'];
 }
 
+export interface CreateAdminLicenseIptvSourceResponse {
+  ok: boolean;
+  source?: LicenseIptvSource;
+  error?: string;
+  details?: string;
+}
+
 export interface UpdateLicenseIptvSourceInput {
   name?: string;
   source_url?: string;
   type?: LicenseIptvSource['type'];
   is_active?: boolean;
+}
+
+export interface UpdateAdminLicenseIptvSourceResponse {
+  ok: boolean;
+  source?: LicenseIptvSource;
+  error?: string;
+  details?: string;
 }
 
 export async function listAdminLicenses(): Promise<License[]> {
@@ -228,43 +242,54 @@ export async function listAdminPlaybackSessions(
 export async function createAdminLicenseIptvSource(
   input: CreateLicenseIptvSourceInput,
 ): Promise<LicenseIptvSource> {
-  const { data, error } = await supabase
-    .from('license_iptv_sources')
-    .insert({
-      license_id: input.license_id,
-      name: input.name.trim(),
-      source_url: input.source_url.trim(),
-      type: input.type ?? 'm3u',
-      is_active: input.is_active ?? true,
-      created_by: input.created_by ?? 'admin',
-    })
-    .select('*')
-    .single();
+  const { data, error } =
+    await supabase.functions.invoke<CreateAdminLicenseIptvSourceResponse>(
+      'create-license-iptv-source',
+      {
+        body: {
+          license_id: input.license_id,
+          name: input.name.trim(),
+          source_url: input.source_url.trim(),
+          type: input.type ?? 'm3u',
+          is_active: input.is_active ?? true,
+          created_by: input.created_by ?? 'admin',
+        },
+      },
+    );
 
   if (error) {
     throw error;
   }
 
-  return data as LicenseIptvSource;
+  if (!data?.ok || !data.source) {
+    throw new Error(data?.error ?? 'CREATE_LICENSE_IPTV_SOURCE_FAILED');
+  }
+
+  return data.source;
 }
 
 export async function updateAdminLicenseIptvSource(
   sourceId: string,
   input: UpdateLicenseIptvSourceInput,
 ): Promise<LicenseIptvSource> {
-  const { data, error } = await supabase
-    .from('license_iptv_sources')
-    .update({
-      ...input,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', sourceId)
-    .select('*')
-    .single();
+  const { data, error } =
+    await supabase.functions.invoke<UpdateAdminLicenseIptvSourceResponse>(
+      'update-license-iptv-source',
+      {
+        body: {
+          sourceId,
+          ...input,
+        },
+      },
+    );
 
   if (error) {
     throw error;
   }
 
-  return data as LicenseIptvSource;
+  if (!data?.ok || !data.source) {
+    throw new Error(data?.error ?? 'UPDATE_LICENSE_IPTV_SOURCE_FAILED');
+  }
+
+  return data.source;
 }
