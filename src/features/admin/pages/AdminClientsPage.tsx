@@ -6,6 +6,7 @@ import {
   createAdminDevice,
   createAdminIptvSource,
   listAdminClients,
+  updateAdminClientDetails,
   updateAdminClientStatus,
 } from '../services';
 import type { Client, ClientStatus, IptvSourceType } from '../types/admin.types';
@@ -25,6 +26,14 @@ type ClientCreationForm = {
   source_type: IptvSourceType;
 };
 
+type ClientEditForm = {
+  name: string;
+  email: string;
+  phone: string;
+  expires_at: string;
+  notes: string;
+};
+
 const INITIAL_FORM: ClientCreationForm = {
   name: '',
   email: '',
@@ -40,12 +49,28 @@ const INITIAL_FORM: ClientCreationForm = {
   source_type: 'm3u',
 };
 
+const INITIAL_EDIT_FORM: ClientEditForm = {
+  name: '',
+  email: '',
+  phone: '',
+  expires_at: '',
+  notes: '',
+};
+
 function formatDate(value: string | null) {
   if (!value) {
     return 'Sem vencimento';
   }
 
   return new Intl.DateTimeFormat('pt-BR').format(new Date(value));
+}
+
+function formatDateInputValue(value: string | null) {
+  if (!value) {
+    return '';
+  }
+
+  return value.slice(0, 10);
 }
 
 function getStatusLabel(status: Client['status']) {
@@ -90,6 +115,25 @@ function getUpdateClientStatusErrorMessage(error: unknown) {
   return messages[error.message] ?? error.message;
 }
 
+function getUpdateClientDetailsErrorMessage(error: unknown) {
+  if (!(error instanceof Error)) {
+    return 'Não foi possível salvar as alterações do cliente.';
+  }
+
+  const messages: Record<string, string> = {
+    INVALID_PAYLOAD: 'Informe os dados obrigatórios do cliente.',
+    UNAUTHORIZED: 'Sessão administrativa inválida. Faça login novamente.',
+    FORBIDDEN: 'Você não tem permissão para editar este cliente.',
+    CLIENT_NOT_FOUND: 'Cliente não encontrado.',
+    CLIENT_DETAILS_UPDATE_FAILED:
+      'Não foi possível salvar as alterações do cliente.',
+    UPDATE_CLIENT_DETAILS_FAILED:
+      'Não foi possível salvar as alterações do cliente.',
+  };
+
+  return messages[error.message] ?? error.message;
+}
+
 function normalizeOptionalValue(value: string) {
   const normalizedValue = value.trim();
 
@@ -99,8 +143,11 @@ function normalizeOptionalValue(value: string) {
 export function AdminClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [form, setForm] = useState<ClientCreationForm>(INITIAL_FORM);
+  const [editingClientId, setEditingClientId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<ClientEditForm>(INITIAL_EDIT_FORM);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [updatingClientId, setUpdatingClientId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -129,6 +176,16 @@ export function AdminClientsPage() {
     value: ClientCreationForm[Field],
   ) => {
     setForm((currentForm) => ({
+      ...currentForm,
+      [field]: value,
+    }));
+  };
+
+  const updateEditFormField = <Field extends keyof ClientEditForm>(
+    field: Field,
+    value: ClientEditForm[Field],
+  ) => {
+    setEditForm((currentForm) => ({
       ...currentForm,
       [field]: value,
     }));
@@ -198,6 +255,64 @@ export function AdminClientsPage() {
       setErrorMessage('Não foi possível cadastrar o cliente e seus vínculos.');
     } finally {
       setIsCreating(false);
+    }
+  };
+
+  const handleStartEditingClient = (client: Client) => {
+    setEditingClientId(client.id);
+    setEditForm({
+      name: client.name,
+      email: client.email ?? '',
+      phone: client.phone ?? '',
+      expires_at: formatDateInputValue(client.expires_at),
+      notes: client.notes ?? '',
+    });
+    setErrorMessage(null);
+    setSuccessMessage(null);
+  };
+
+  const handleCancelEditingClient = () => {
+    setEditingClientId(null);
+    setEditForm(INITIAL_EDIT_FORM);
+    setErrorMessage(null);
+  };
+
+  const handleSubmitEdit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!editingClientId) {
+      return;
+    }
+
+    const clientName = editForm.name.trim();
+
+    if (!clientName) {
+      setErrorMessage('Informe o nome do cliente.');
+      return;
+    }
+
+    try {
+      setIsSavingEdit(true);
+      setErrorMessage(null);
+      setSuccessMessage(null);
+
+      await updateAdminClientDetails({
+        clientId: editingClientId,
+        name: clientName,
+        email: normalizeOptionalValue(editForm.email),
+        phone: normalizeOptionalValue(editForm.phone),
+        expires_at: normalizeOptionalValue(editForm.expires_at),
+        notes: normalizeOptionalValue(editForm.notes),
+      });
+
+      setSuccessMessage('Cliente atualizado com sucesso.');
+      setEditingClientId(null);
+      setEditForm(INITIAL_EDIT_FORM);
+      await loadClients();
+    } catch (error) {
+      setErrorMessage(getUpdateClientDetailsErrorMessage(error));
+    } finally {
+      setIsSavingEdit(false);
     }
   };
 
@@ -429,6 +544,106 @@ export function AdminClientsPage() {
           </button>
         </form>
 
+        {editingClientId ? (
+          <form
+            onSubmit={handleSubmitEdit}
+            className="rounded-2xl border border-white/10 bg-white/5 p-6"
+          >
+            <div>
+              <p className="text-sm font-bold uppercase tracking-[0.3em] text-xf-red">
+                Editar cliente
+              </p>
+              <h2 className="mt-2 text-2xl font-black text-white">
+                Dados cadastrais
+              </h2>
+              <p className="mt-2 max-w-3xl text-sm text-xf-muted">
+                Atualize cadastro, contato, vencimento e observações. O status
+                do cliente permanece nas ações da tabela.
+              </p>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <label className="flex flex-col gap-2 text-sm font-semibold text-white">
+                Nome do cliente *
+                <input
+                  className="rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-white outline-none focus:border-xf-red"
+                  value={editForm.name}
+                  onChange={(event) =>
+                    updateEditFormField('name', event.target.value)
+                  }
+                  placeholder="Ex.: João Silva"
+                />
+              </label>
+
+              <label className="flex flex-col gap-2 text-sm font-semibold text-white">
+                E-mail
+                <input
+                  className="rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-white outline-none focus:border-xf-red"
+                  value={editForm.email}
+                  onChange={(event) =>
+                    updateEditFormField('email', event.target.value)
+                  }
+                  placeholder="cliente@email.com"
+                />
+              </label>
+
+              <label className="flex flex-col gap-2 text-sm font-semibold text-white">
+                Telefone
+                <input
+                  className="rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-white outline-none focus:border-xf-red"
+                  value={editForm.phone}
+                  onChange={(event) =>
+                    updateEditFormField('phone', event.target.value)
+                  }
+                  placeholder="(62) 99999-9999"
+                />
+              </label>
+
+              <label className="flex flex-col gap-2 text-sm font-semibold text-white">
+                Vencimento
+                <input
+                  type="date"
+                  className="rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-white outline-none focus:border-xf-red"
+                  value={editForm.expires_at}
+                  onChange={(event) =>
+                    updateEditFormField('expires_at', event.target.value)
+                  }
+                />
+              </label>
+
+              <label className="flex flex-col gap-2 text-sm font-semibold text-white md:col-span-2">
+                Observações
+                <textarea
+                  className="min-h-24 rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-white outline-none focus:border-xf-red"
+                  value={editForm.notes}
+                  onChange={(event) =>
+                    updateEditFormField('notes', event.target.value)
+                  }
+                  placeholder="Observações administrativas..."
+                />
+              </label>
+            </div>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <button
+                type="submit"
+                disabled={isSavingEdit}
+                className="rounded-xl bg-xf-red px-6 py-3 text-sm font-black uppercase tracking-[0.2em] text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isSavingEdit ? 'Salvando...' : 'Salvar alterações'}
+              </button>
+              <button
+                type="button"
+                disabled={isSavingEdit}
+                onClick={handleCancelEditingClient}
+                className="rounded-xl border border-white/10 bg-white/10 px-6 py-3 text-sm font-black uppercase tracking-[0.2em] text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+        ) : null}
+
         <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
           {isLoading ? (
             <div className="p-6 text-sm text-xf-muted">Carregando clientes...</div>
@@ -472,18 +687,28 @@ export function AdminClientsPage() {
                         {formatDate(client.expires_at)}
                       </td>
                       <td className="px-5 py-4">
-                        <button
-                          type="button"
-                          onClick={() => void handleToggleClientStatus(client)}
-                          disabled={updatingClientId === client.id}
-                          className="rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-xs font-black text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          {updatingClientId === client.id
-                            ? 'Atualizando...'
-                            : client.status === 'blocked'
-                              ? 'Reativar cliente'
-                              : 'Suspender cliente'}
-                        </button>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleStartEditingClient(client)}
+                            disabled={isSavingEdit}
+                            className="rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-xs font-black text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            Editar
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => void handleToggleClientStatus(client)}
+                            disabled={updatingClientId === client.id}
+                            className="rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-xs font-black text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            {updatingClientId === client.id
+                              ? 'Atualizando...'
+                              : client.status === 'blocked'
+                                ? 'Reativar cliente'
+                                : 'Suspender cliente'}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
