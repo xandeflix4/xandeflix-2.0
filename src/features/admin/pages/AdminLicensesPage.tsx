@@ -5,7 +5,7 @@ import { AdminLayout } from '../components/AdminLayout';
 import {
   createAdminLicense,
   createAdminLicenseIptvSource,
-  updateAdminLicense,
+  updateAdminLicenseDetails,
   updateAdminLicenseStatus,
   listAdminLicenseDevices,
   listAdminLicenseIptvSources,
@@ -74,6 +74,12 @@ function normalizeExpirationDate(value: string) {
   }
 
   return new Date(value + 'T23:59:59.000Z').toISOString();
+}
+
+function normalizeOptionalFormText(value: string) {
+  const normalized = value.trim();
+
+  return normalized ? normalized : null;
 }
 
 function getLicenseStatusActions(status: LicenseStatus): LicenseStatusActionOption[] {
@@ -145,6 +151,23 @@ function getUpdateLicenseStatusErrorMessage(error: unknown) {
   return messages[error.message] ?? error.message;
 }
 
+function getUpdateLicenseDetailsErrorMessage(error: unknown) {
+  if (!(error instanceof Error)) {
+    return 'Não foi possível atualizar a licença.';
+  }
+
+  const messages: Record<string, string> = {
+    INVALID_PAYLOAD: 'Dados inválidos para atualizar a licença.',
+    UNAUTHORIZED: 'Sessão administrativa inválida. Faça login novamente.',
+    FORBIDDEN: 'Você não tem permissão para editar esta licença.',
+    LICENSE_NOT_FOUND: 'Licença não encontrada.',
+    LICENSE_DETAILS_UPDATE_FAILED: 'Não foi possível atualizar a licença.',
+    UPDATE_LICENSE_DETAILS_FAILED: 'Não foi possível atualizar a licença.',
+  };
+
+  return messages[error.message] ?? error.message;
+}
+
 export function AdminLicensesPage() {
   const [licenses, setLicenses] = useState<License[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -175,12 +198,12 @@ export function AdminLicensesPage() {
   const [isUpdatingLicense, setIsUpdatingLicense] = useState(false);
 
   const [editLabel, setEditLabel] = useState('');
-  const [editStatus, setEditStatus] = useState<LicenseStatus>('active');
   const [editPlanType, setEditPlanType] = useState<LicensePlanType>('monthly');
   const [editExpiresAt, setEditExpiresAt] = useState('');
   const [editMaxDevices, setEditMaxDevices] = useState(1);
   const [editMaxConcurrentStreams, setEditMaxConcurrentStreams] = useState(1);
   const [editAllowUserManageSources, setEditAllowUserManageSources] = useState(true);
+  const [editNotes, setEditNotes] = useState('');
 
   const activePlaybackSessions = useMemo(
     () => playbackSessions.filter((session) => session.status === 'active'),
@@ -302,12 +325,12 @@ export function AdminLicensesPage() {
   function openEditLicenseModal(license: License) {
     setEditingLicense(license);
     setEditLabel(license.label ?? '');
-    setEditStatus(license.status);
     setEditPlanType(license.plan_type);
     setEditExpiresAt(license.expires_at ? license.expires_at.slice(0, 10) : '');
     setEditMaxDevices(license.max_devices);
     setEditMaxConcurrentStreams(license.max_concurrent_streams);
     setEditAllowUserManageSources(license.allow_user_manage_sources);
+    setEditNotes(license.notes ?? '');
     setErrorMessage(null);
     setSuccessMessage(null);
   }
@@ -337,14 +360,15 @@ export function AdminLicensesPage() {
       setErrorMessage(null);
       setSuccessMessage(null);
 
-      const updatedLicense = await updateAdminLicense(editingLicense.id, {
-        label: editLabel.trim() || null,
-        status: editStatus,
+      const updatedLicense = await updateAdminLicenseDetails({
+        licenseId: editingLicense.id,
+        label: normalizeOptionalFormText(editLabel),
         plan_type: editPlanType,
         expires_at: normalizeExpirationDate(editExpiresAt),
         max_devices: editMaxDevices,
         max_concurrent_streams: editMaxConcurrentStreams,
         allow_user_manage_sources: editAllowUserManageSources,
+        notes: normalizeOptionalFormText(editNotes),
       });
 
       setLicenses((currentLicenses) =>
@@ -359,8 +383,8 @@ export function AdminLicensesPage() {
 
       setEditingLicense(null);
       setSuccessMessage('Licença atualizada com sucesso.');
-    } catch {
-      setErrorMessage('Não foi possível atualizar a licença.');
+    } catch (error) {
+      setErrorMessage(getUpdateLicenseDetailsErrorMessage(error));
     } finally {
       setIsUpdatingLicense(false);
     }
@@ -971,21 +995,6 @@ export function AdminLicensesPage() {
                   </label>
 
                   <label className="flex flex-col gap-2">
-                    <span className="text-sm font-bold text-white">Status</span>
-                    <select
-                      value={editStatus}
-                      onChange={(event) => setEditStatus(event.target.value as LicenseStatus)}
-                      className="rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition focus:border-xf-red"
-                    >
-                      <option value="active">Ativa</option>
-                      <option value="inactive">Inativa</option>
-                      <option value="blocked">Bloqueada</option>
-                      <option value="canceled">Cancelada</option>
-                      <option value="expired">Expirada</option>
-                    </select>
-                  </label>
-
-                  <label className="flex flex-col gap-2">
                     <span className="text-sm font-bold text-white">Plano</span>
                     <select
                       value={editPlanType}
@@ -1040,6 +1049,16 @@ export function AdminLicensesPage() {
                     <span className="text-sm font-bold text-white">
                       Usuário pode gerenciar lista
                     </span>
+                  </label>
+
+                  <label className="flex flex-col gap-2 md:col-span-2">
+                    <span className="text-sm font-bold text-white">Observações</span>
+                    <textarea
+                      value={editNotes}
+                      onChange={(event) => setEditNotes(event.target.value)}
+                      rows={4}
+                      className="rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition focus:border-xf-red"
+                    />
                   </label>
                 </div>
 

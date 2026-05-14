@@ -22,23 +22,30 @@ export interface CreateLicenseInput {
   notes?: string | null;
 }
 
-export interface UpdateLicenseInput {
-  label?: string | null;
-  status?: LicenseStatus;
-  plan_type?: LicensePlanType;
-  expires_at?: string | null;
-  max_devices?: number;
-  max_concurrent_streams?: number;
-  allow_user_manage_sources?: boolean;
-  notes?: string | null;
-}
-
 export interface UpdateAdminLicenseStatusInput {
   licenseId: string;
   status: Extract<LicenseStatus, 'active' | 'expired' | 'canceled'>;
 }
 
 export interface UpdateAdminLicenseStatusResponse {
+  ok: boolean;
+  license?: License;
+  error?: string;
+  details?: string;
+}
+
+export interface UpdateAdminLicenseDetailsInput {
+  licenseId: string;
+  label?: string | null;
+  plan_type: LicensePlanType;
+  expires_at?: string | null;
+  max_devices: number;
+  max_concurrent_streams: number;
+  allow_user_manage_sources: boolean;
+  notes?: string | null;
+}
+
+export interface UpdateAdminLicenseDetailsResponse {
   ok: boolean;
   license?: License;
   error?: string;
@@ -101,27 +108,6 @@ export async function createAdminLicense(input: CreateLicenseInput): Promise<Lic
   return data as License;
 }
 
-export async function updateAdminLicense(
-  licenseId: string,
-  input: UpdateLicenseInput,
-): Promise<License> {
-  const { data, error } = await supabase
-    .from('licenses')
-    .update({
-      ...input,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', licenseId)
-    .select('*')
-    .single();
-
-  if (error) {
-    throw error;
-  }
-
-  return data as License;
-}
-
 export async function updateAdminLicenseStatus({
   licenseId,
   status,
@@ -143,6 +129,44 @@ export async function updateAdminLicenseStatus({
 
   if (!data?.ok || !data.license) {
     throw new Error(data?.error ?? 'UPDATE_LICENSE_STATUS_FAILED');
+  }
+
+  return data.license;
+}
+
+export async function updateAdminLicenseDetails({
+  licenseId,
+  label,
+  plan_type,
+  expires_at,
+  max_devices,
+  max_concurrent_streams,
+  allow_user_manage_sources,
+  notes,
+}: UpdateAdminLicenseDetailsInput): Promise<License> {
+  const { data, error } =
+    await supabase.functions.invoke<UpdateAdminLicenseDetailsResponse>(
+      'update-license-details',
+      {
+        body: {
+          licenseId,
+          label,
+          plan_type,
+          expires_at,
+          max_devices,
+          max_concurrent_streams,
+          allow_user_manage_sources,
+          notes,
+        },
+      },
+    );
+
+  if (error) {
+    throw error;
+  }
+
+  if (!data?.ok || !data.license) {
+    throw new Error(data?.error ?? 'UPDATE_LICENSE_DETAILS_FAILED');
   }
 
   return data.license;
