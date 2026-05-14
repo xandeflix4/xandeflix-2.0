@@ -185,6 +185,25 @@ function getCreateLicenseErrorMessage(error: unknown) {
   return messages[error.message] ?? error.message;
 }
 
+function getCreateLicenseIptvSourceErrorMessage(error: unknown) {
+  if (!(error instanceof Error)) {
+    return 'Não foi possível cadastrar a fonte IPTV da licença.';
+  }
+
+  const messages: Record<string, string> = {
+    INVALID_PAYLOAD: 'Informe nome, URL e tipo válidos para a fonte IPTV.',
+    UNAUTHORIZED: 'Sessão administrativa inválida. Faça login novamente.',
+    FORBIDDEN: 'Você não tem permissão para alterar esta licença.',
+    LICENSE_NOT_FOUND: 'Licença não encontrada.',
+    LICENSE_IPTV_SOURCE_CREATE_FAILED:
+      'Não foi possível cadastrar a fonte IPTV da licença.',
+    CREATE_LICENSE_IPTV_SOURCE_FAILED:
+      'Não foi possível cadastrar a fonte IPTV da licença.',
+  };
+
+  return messages[error.message] ?? error.message;
+}
+
 export function AdminLicensesPage() {
   const [licenses, setLicenses] = useState<License[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -332,8 +351,8 @@ export function AdminLicensesPage() {
       setSourceType('m3u');
 
       await loadLicenseDetails(selectedLicense);
-    } catch {
-      setErrorMessage('Não foi possível cadastrar a fonte IPTV da licença.');
+    } catch (error) {
+      setErrorMessage(getCreateLicenseIptvSourceErrorMessage(error));
     } finally {
       setIsCreatingSource(false);
     }
