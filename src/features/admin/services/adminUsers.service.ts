@@ -1,6 +1,19 @@
 import { supabase } from '../../../lib/supabase/supabaseClient';
 
-import type { AdminProfile } from '../types/admin.types';
+import type { AdminProfile, AdminRole } from '../types/admin.types';
+
+export interface CreateAdminUserInput {
+  email: string;
+  password: string;
+  role: AdminRole;
+}
+
+export interface CreateAdminUserResponse {
+  ok: boolean;
+  adminUser?: AdminProfile;
+  error?: string;
+  details?: string;
+}
 
 export async function listAdminUsers(): Promise<AdminProfile[]> {
   const { data, error } = await supabase
@@ -13,4 +26,29 @@ export async function listAdminUsers(): Promise<AdminProfile[]> {
   }
 
   return (data ?? []) as AdminProfile[];
+}
+
+export async function createAdminUser(
+  input: CreateAdminUserInput,
+): Promise<AdminProfile> {
+  const { data, error } = await supabase.functions.invoke<CreateAdminUserResponse>(
+    'create-admin-user',
+    {
+      body: {
+        email: input.email,
+        password: input.password,
+        role: input.role,
+      },
+    },
+  );
+
+  if (error) {
+    throw error;
+  }
+
+  if (!data?.ok || !data.adminUser) {
+    throw new Error(data?.error ?? 'CREATE_ADMIN_USER_FAILED');
+  }
+
+  return data.adminUser;
 }

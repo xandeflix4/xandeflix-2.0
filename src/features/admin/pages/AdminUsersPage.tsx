@@ -1,8 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type FormEvent } from 'react';
 
 import { AdminLayout } from '../components/AdminLayout';
-import { listAdminUsers } from '../services';
-import type { AdminProfile } from '../types/admin.types';
+import { createAdminUser, listAdminUsers } from '../services';
+import type { AdminProfile, AdminRole } from '../types/admin.types';
+
+type AdminUserCreationForm = {
+  email: string;
+  password: string;
+  role: AdminRole;
+};
+
+const INITIAL_FORM: AdminUserCreationForm = {
+  email: '',
+  password: '',
+  role: 'admin',
+};
 
 function formatDateTime(value: string) {
   return new Intl.DateTimeFormat('pt-BR', {
@@ -24,41 +36,98 @@ function getStatusLabel(isActive: boolean) {
   return isActive ? 'Ativo' : 'Inativo';
 }
 
+function getCreateAdminUserErrorMessage(error: unknown) {
+  if (!(error instanceof Error)) {
+    return 'Não foi possível criar o administrador.';
+  }
+
+  const messages: Record<string, string> = {
+    INVALID_PAYLOAD: 'Informe e-mail, senha e perfil válidos.',
+    WEAK_PASSWORD: 'A senha precisa ter pelo menos 8 caracteres.',
+    UNAUTHORIZED: 'Sessão administrativa inválida. Faça login novamente.',
+    FORBIDDEN: 'Apenas Super Admin pode criar administradores.',
+    AUTH_USER_CREATE_FAILED: 'Não foi possível criar o usuário no Supabase Auth.',
+    ADMIN_PROFILE_CREATE_FAILED:
+      'O usuário Auth foi criado, mas o perfil administrativo falhou.',
+    CREATE_ADMIN_USER_FAILED: 'Não foi possível criar o administrador.',
+  };
+
+  return messages[error.message] ?? error.message;
+}
+
 export function AdminUsersPage() {
   const [adminUsers, setAdminUsers] = useState<AdminProfile[]>([]);
+  const [form, setForm] = useState<AdminUserCreationForm>(INITIAL_FORM);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const loadAdminUsers = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setErrorMessage(null);
+
+      const data = await listAdminUsers();
+
+      setAdminUsers(data);
+    } catch {
+      setErrorMessage('Não foi possível carregar os administradores.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    let isMounted = true;
+    void loadAdminUsers();
+  }, [loadAdminUsers]);
 
-    async function loadAdminUsers() {
-      try {
-        setIsLoading(true);
-        setErrorMessage(null);
+  const updateFormField = <Field extends keyof AdminUserCreationForm>(
+    field: Field,
+    value: AdminUserCreationForm[Field],
+  ) => {
+    setForm((currentForm) => ({
+      ...currentForm,
+      [field]: value,
+    }));
+  };
 
-        const data = await listAdminUsers();
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-        if (isMounted) {
-          setAdminUsers(data);
-        }
-      } catch {
-        if (isMounted) {
-          setErrorMessage('Não foi possível carregar os administradores.');
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
+    const email = form.email.trim().toLowerCase();
+    const password = form.password.trim();
+
+    if (!email || !password) {
+      setErrorMessage('Informe e-mail e senha do administrador.');
+      return;
     }
 
-    void loadAdminUsers();
+    if (password.length < 8) {
+      setErrorMessage('A senha precisa ter pelo menos 8 caracteres.');
+      return;
+    }
 
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+    try {
+      setIsCreating(true);
+      setErrorMessage(null);
+      setSuccessMessage(null);
+
+      await createAdminUser({
+        email,
+        password,
+        role: form.role,
+      });
+
+      setSuccessMessage('Administrador criado com sucesso.');
+      setForm(INITIAL_FORM);
+      await loadAdminUsers();
+    } catch (error) {
+      setErrorMessage(getCreateAdminUserErrorMessage(error));
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   return (
     <AdminLayout>
@@ -71,19 +140,98 @@ export function AdminUsersPage() {
             Administradores
           </h1>
           <p className="mt-3 max-w-3xl text-base text-xf-muted">
-            Lista dos perfis administrativos autorizados no painel. A criação real
-            de novos administradores será implementada posteriormente por Edge
-            Function segura, sem expor service role no frontend.
+            Gerencie os perfis administrativos autorizados no painel. A criação
+            usa Edge Function segura no backend, sem expor service role no
+            frontend.
           </p>
         </div>
 
+        <form
+          onSubmit={handleSubmit}
+          className="rounded-2xl border border-white/10 bg-white/5 p-6"
+        >
+          <div>
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-xf-red">
+              Novo administrador
+            </p>
+            <h2 className="mt-2 text-2xl font-black text-white">
+              Criar acesso administrativo
+            </h2>
+            <p className="mt-2 max-w-3xl text-sm text-xf-muted">
+              O usuário será criado no Supabase Auth por uma Edge Function
+              protegida e receberá um perfil em admin_profiles.
+            </p>
+          </div>
+
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            <label className="flex flex-col gap-2 text-sm font-semibold text-white md:col-span-1">
+              E-mail *
+              <input
+                type="email"
+                className="rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-white outline-none focus:border-xf-red"
+                value={form.email}
+                onChange={(event) => updateFormField('email', event.target.value)}
+                placeholder="admin@email.com"
+              />
+            </label>
+
+            <label className="flex flex-col gap-2 text-sm font-semibold text-white md:col-span-1">
+              Senha temporária *
+              <input
+                type="password"
+                className="rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-white outline-none focus:border-xf-red"
+                value={form.password}
+                onChange={(event) =>
+                  updateFormField('password', event.target.value)
+                }
+                placeholder="Mínimo 8 caracteres"
+              />
+            </label>
+
+            <label className="flex flex-col gap-2 text-sm font-semibold text-white md:col-span-1">
+              Perfil
+              <select
+                className="rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-white outline-none focus:border-xf-red"
+                value={form.role}
+                onChange={(event) =>
+                  updateFormField('role', event.target.value as AdminRole)
+                }
+              >
+                <option value="admin">Admin</option>
+                <option value="super_admin">Super Admin</option>
+              </select>
+            </label>
+          </div>
+
+          {errorMessage ? (
+            <div className="mt-4 rounded-xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm text-red-200">
+              {errorMessage}
+            </div>
+          ) : null}
+
+          {successMessage ? (
+            <div className="mt-4 rounded-xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-200">
+              {successMessage}
+            </div>
+          ) : null}
+
+          <button
+            type="submit"
+            disabled={isCreating}
+            className="mt-6 rounded-xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-xf-red hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isCreating ? 'Criando administrador...' : 'Criar administrador'}
+          </button>
+        </form>
+
         <div className="rounded-2xl border border-yellow-400/20 bg-yellow-400/10 p-5">
           <p className="text-sm font-bold text-yellow-100">
-            Segurança: esta etapa é somente leitura.
+            Segurança: a service role permanece no backend.
           </p>
           <p className="mt-2 text-sm text-yellow-100/80">
-            Criar usuário no Supabase Auth exige Admin API/service role. Essa
-            credencial nunca deve ser usada em componentes React.
+            Esta tela chama apenas a Edge Function create-admin-user. A função
+            valida a sessão atual e confirma permissão de Super Admin antes de
+            criar o usuário no Supabase Auth.
           </p>
         </div>
 
@@ -92,7 +240,7 @@ export function AdminUsersPage() {
             <div className="p-6 text-sm text-xf-muted">
               Carregando administradores...
             </div>
-          ) : errorMessage ? (
+          ) : errorMessage && adminUsers.length === 0 ? (
             <div className="p-6 text-sm text-red-300">{errorMessage}</div>
           ) : adminUsers.length === 0 ? (
             <div className="p-6 text-sm text-xf-muted">
