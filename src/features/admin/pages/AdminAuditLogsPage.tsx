@@ -18,6 +18,7 @@ const auditActionLabels: Record<string, string> = {
   license_cancelled: 'Licença cancelada',
   license_iptv_source_created: 'Fonte IPTV criada',
   license_iptv_source_updated: 'Fonte IPTV atualizada',
+  license_iptv_source_channels_imported: 'Canais IPTV importados',
   license_device_activated: 'Dispositivo ativado',
   license_device_deactivated: 'Dispositivo desativado',
   playback_session_manually_ended: 'Sessão encerrada manualmente',
@@ -38,6 +39,29 @@ const auditEntityLabels: Record<string, string> = {
   license_devices: 'Dispositivos de licença',
   playback_sessions: 'Sessões de reprodução',
   app_installations: 'Instalações do app',
+};
+
+
+
+const auditMetadataLabels: Record<string, string> = {
+  action: 'Operação',
+  error: 'Erro',
+  limit: 'Limite',
+  licenseCode: 'Código da licença',
+  licenseId: 'ID da licença',
+  sampleChannels: 'Amostra de canais',
+  sourceId: 'ID da fonte',
+  sourceName: 'Nome da fonte',
+  sourceType: 'Tipo da fonte',
+  success: 'Sucesso',
+  totalDeactivatedMissing: 'Inativados por ausência',
+  totalFailed: 'Falhas',
+  totalImported: 'Importados',
+  totalParsed: 'Processados',
+  totalReactivated: 'Reativados',
+  totalSkipped: 'Ignorados',
+  totalUpdated: 'Atualizados',
+  wasLimited: 'Importação limitada',
 };
 
 const knownAuditActions = Object.keys(auditActionLabels).sort();
@@ -79,6 +103,10 @@ function formatAuditAction(action: string) {
 
 function formatAuditEntity(entity: string) {
   return auditEntityLabels[entity] ?? entity;
+}
+
+function formatAuditMetadataKey(key: string) {
+  return auditMetadataLabels[key] ?? key;
 }
 
 function normalizeMetadataValue(value: unknown) {
@@ -432,7 +460,7 @@ export function AdminAuditLogsPage() {
                                   className="rounded-xl border border-white/10 bg-black/20 p-3"
                                 >
                                   <dt className="font-mono text-[0.7rem] font-bold text-white">
-                                    {key}
+                                    {formatAuditMetadataKey(key)}
                                   </dt>
                                   <dd className="mt-1 whitespace-pre-wrap break-words font-mono text-xs text-xf-muted">
                                     {normalizeMetadataValue(value)}
