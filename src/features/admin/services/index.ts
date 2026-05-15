@@ -4,5 +4,6 @@ export * from './adminClients.service';
 export * from './adminDevices.service';
 export * from './adminIptvSources.service';
 export * from './adminLicenses.service';
+export * from './adminLicenseChannelsCache.service';
 export * from './adminPlaybackSessions.service';
 export * from './adminUsers.service';
