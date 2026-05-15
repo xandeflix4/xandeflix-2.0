@@ -4,6 +4,8 @@ import { AdminLayout } from '../components/AdminLayout';
 import { listAdminAuditLogs, type ListAdminAuditLogsFilters } from '../services';
 import type { AuditLog } from '../types/admin.types';
 
+const licenseImportAuditAction = 'license_iptv_source_channels_imported';
+
 const auditActionLabels: Record<string, string> = {
   admin_user_created: 'Administrador criado',
   admin_user_activated: 'Administrador ativado',
@@ -18,7 +20,7 @@ const auditActionLabels: Record<string, string> = {
   license_cancelled: 'Licença cancelada',
   license_iptv_source_created: 'Fonte IPTV criada',
   license_iptv_source_updated: 'Fonte IPTV atualizada',
-  license_iptv_source_channels_imported: 'Canais IPTV importados',
+  [licenseImportAuditAction]: 'Canais IPTV importados',
   license_device_activated: 'Dispositivo ativado',
   license_device_deactivated: 'Dispositivo desativado',
   playback_session_manually_ended: 'Sessão encerrada manualmente',
@@ -67,6 +69,19 @@ const auditMetadataLabels: Record<string, string> = {
 const knownAuditActions = Object.keys(auditActionLabels).sort();
 const knownAuditEntities = Object.keys(auditEntityLabels).sort();
 const pageSizeOptions = [10, 25, 50, 100];
+const licenseImportAuditSummaryFields = [
+  { key: 'totalImported', label: 'Importados' },
+  { key: 'totalUpdated', label: 'Atualizados' },
+  { key: 'totalReactivated', label: 'Reativados' },
+  { key: 'totalDeactivatedMissing', label: 'Inativados por ausência' },
+  { key: 'totalFailed', label: 'Falhas' },
+  { key: 'totalSkipped', label: 'Ignorados' },
+] as const;
+
+type LicenseImportAuditSummaryKey =
+  (typeof licenseImportAuditSummaryFields)[number]['key'];
+
+type LicenseImportAuditSummary = Record<LicenseImportAuditSummaryKey, number>;
 
 type AuditFiltersForm = {
   action: string;
@@ -109,6 +124,24 @@ function formatAuditMetadataKey(key: string) {
   return auditMetadataLabels[key] ?? key;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function toSafeNumber(value: unknown) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === 'string' && value.trim() !== '') {
+    const parsedValue = Number(value);
+
+    return Number.isFinite(parsedValue) ? parsedValue : 0;
+  }
+
+  return 0;
+}
+
 function normalizeMetadataValue(value: unknown) {
   if (value === null || value === undefined) {
     return 'Não informado';
@@ -125,12 +158,27 @@ function normalizeMetadataValue(value: unknown) {
   return JSON.stringify(value, null, 2);
 }
 
-function getMetadataEntries(metadata: Record<string, unknown>) {
+function getMetadataEntries(metadata: unknown) {
+  if (!isRecord(metadata)) {
+    return [];
+  }
+
   return Object.entries(metadata).filter(([, value]) => value !== undefined);
 }
 
 function getActorLabel(actorId: string | null) {
   return actorId ?? 'Sistema';
+}
+
+function createEmptyLicenseImportAuditSummary(): LicenseImportAuditSummary {
+  return {
+    totalImported: 0,
+    totalUpdated: 0,
+    totalReactivated: 0,
+    totalDeactivatedMissing: 0,
+    totalFailed: 0,
+    totalSkipped: 0,
+  };
 }
 
 function buildQueryFilters(
@@ -181,6 +229,23 @@ export function AdminAuditLogsPage() {
     [logs],
   );
 
+  const isLicenseImportFilterActive =
+    appliedFilters.action === licenseImportAuditAction;
+
+  const licenseImportAuditSummary = useMemo(
+    () =>
+      logs.reduce((summary, log) => {
+        const metadata = isRecord(log.metadata) ? log.metadata : {};
+
+        licenseImportAuditSummaryFields.forEach(({ key }) => {
+          summary[key] += toSafeNumber(metadata[key]);
+        });
+
+        return summary;
+      }, createEmptyLicenseImportAuditSummary()),
+    [logs],
+  );
+
   async function loadLogs(nextFilters = appliedFilters, page = currentPage) {
     try {
       setIsLoading(true);
@@ -215,6 +280,17 @@ export function AdminAuditLogsPage() {
   function handleSubmitFilters(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setAppliedFilters(filters);
+    setCurrentPage(1);
+  }
+
+  function handleApplyLicenseImportFilter() {
+    const nextFilters = {
+      ...filters,
+      action: licenseImportAuditAction,
+    };
+
+    setFilters(nextFilters);
+    setAppliedFilters(nextFilters);
     setCurrentPage(1);
   }
 
@@ -367,6 +443,19 @@ export function AdminAuditLogsPage() {
 
             <button
               type="button"
+              onClick={handleApplyLicenseImportFilter}
+              disabled={isLoading}
+              className={`rounded-xl px-5 py-3 text-sm font-black text-white transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                isLicenseImportFilterActive
+                  ? 'bg-xf-red hover:bg-red-700'
+                  : 'bg-white/10 hover:bg-white/20'
+              }`}
+            >
+              Importações IPTV
+            </button>
+
+            <button
+              type="button"
               onClick={handleClearFilters}
               disabled={isLoading}
               className="rounded-xl bg-white/10 px-5 py-3 text-sm font-black text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60"
@@ -375,6 +464,40 @@ export function AdminAuditLogsPage() {
             </button>
           </div>
         </form>
+
+        {isLicenseImportFilterActive ? (
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-xf-muted">
+                  Resumo da página atual
+                </p>
+                <p className="mt-2 text-sm text-xf-muted">
+                  Os totais abaixo consideram apenas os registros carregados nesta página.
+                </p>
+              </div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-xf-muted">
+                Importações IPTV
+              </p>
+            </div>
+
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {licenseImportAuditSummaryFields.map(({ key, label }) => (
+                <article
+                  key={key}
+                  className="rounded-2xl border border-white/10 bg-black/20 p-4"
+                >
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-xf-muted">
+                    {label}
+                  </p>
+                  <p className="mt-2 text-2xl font-black text-white">
+                    {licenseImportAuditSummary[key]}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </div>
+        ) : null}
 
         {errorMessage ? (
           <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-200">
