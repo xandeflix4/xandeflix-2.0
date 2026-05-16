@@ -1,6 +1,12 @@
 import { Info, Play } from 'lucide-react';
 
 import { spatialDebug } from '@/lib/spatial/spatialDebug';
+import {
+  getCatalogMediaTypeLabel,
+  getCatalogRatingLabel,
+  getCatalogYearLabel,
+} from '@/features/catalog/lib/catalogVisuals';
+import type { CatalogMediaType } from '@/features/catalog/types';
 
 import { FOCUS_KEYS } from '../../lib/spatial/focusKeys';
 import { HERO_SCROLL_OPTIONS } from '../../lib/spatial/focusNavigation';
@@ -16,6 +22,12 @@ interface CatalogHeroProps {
   title?: string;
   description?: string;
   posterUrl?: string;
+  backdropUrl?: string;
+  year?: string | number;
+  rating?: string | number;
+  genres?: string[];
+  mediaType?: CatalogMediaType;
+  overview?: string;
   eyebrow?: string;
   stats?: CatalogHeroStat[];
   onSectionArrowPress?: (direction: string) => boolean;
@@ -27,6 +39,12 @@ export function CatalogHero({
   title = 'Sua noite comecou',
   description = 'Explore recomendacoes, retome o que voce ja assiste e navegue rapido com controle remoto em uma experiencia pensada para TV.',
   posterUrl,
+  backdropUrl,
+  year,
+  rating,
+  genres = [],
+  mediaType,
+  overview,
   eyebrow = 'Inicio',
   stats = [
     { label: 'Navegacao', value: 'D-pad otimizada' },
@@ -45,6 +63,19 @@ export function CatalogHero({
     spatialDebug('hero', 'Mais detalhes:', title);
   }
 
+  const mediaTypeLabel = getCatalogMediaTypeLabel(mediaType);
+  const yearLabel = getCatalogYearLabel(year);
+  const ratingLabel = getCatalogRatingLabel(rating);
+  const trimmedGenres = genres.filter(Boolean).slice(0, 2);
+  const highlightTags = [
+    mediaTypeLabel,
+    yearLabel,
+    ratingLabel,
+    ...trimmedGenres,
+  ].filter(Boolean) as string[];
+  const heroBackgroundUrl = backdropUrl || posterUrl;
+  const resolvedDescription = overview || description;
+
   return (
     <FocusableSection
       focusKey={FOCUS_KEYS.CATALOG_HERO_SECTION}
@@ -53,9 +84,9 @@ export function CatalogHero({
       data-xf-hero="catalog"
       className="relative mb-8 box-border flex w-full max-w-full min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-xf-surface p-[var(--xf-shell-inline-padding)] ring-0 ring-inset ring-transparent transition-[box-shadow,border-color] duration-200 data-[has-focused-child=true]:border-xf-red/50 data-[has-focused-child=true]:ring-2 data-[has-focused-child=true]:ring-inset data-[has-focused-child=true]:ring-xf-red"
     >
-      {posterUrl && (
+      {heroBackgroundUrl && (
         <img
-          src={posterUrl}
+          src={heroBackgroundUrl}
           alt=""
           className="absolute inset-0 h-full w-full object-cover opacity-35"
           loading="eager"
@@ -76,8 +107,21 @@ export function CatalogHero({
             {title}
           </h1>
 
+          {highlightTags.length > 0 ? (
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              {highlightTags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full border border-white/20 bg-black/40 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-100"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          ) : null}
+
           <p className="mt-4 max-w-2xl text-[clamp(0.8rem,1.15vw,1rem)] leading-[1.5] text-zinc-200">
-            {description}
+            {resolvedDescription}
           </p>
 
           <div className="mt-5 flex flex-col gap-2 sm:flex-row">
@@ -116,7 +160,11 @@ export function CatalogHero({
             Panorama rapido
           </p>
 
-          <div className="mt-3 space-y-3">
+          <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-zinc-200">
+            {resolvedDescription}
+          </p>
+
+          <div className="mt-4 space-y-3">
             {stats.map((stat) => (
               <div
                 key={stat.label}

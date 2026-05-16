@@ -15,6 +15,12 @@ import {
   getCategorySeeAllFocusKey,
 } from '../../../lib/spatial/categoryFocusKeys';
 import { spatialDebug } from '@/lib/spatial/spatialDebug';
+import {
+  getCatalogBackdropUrl,
+  getCatalogOverview,
+  getCatalogPosterUrl,
+} from '@/features/catalog/lib/catalogVisuals';
+import type { CatalogItem } from '@/features/catalog/types';
 
 import { catalogSections } from '../data/catalogSections';
 
@@ -25,6 +31,14 @@ const SECTION_LOADING_CARD_COUNT = 4;
 
 function shouldShowSeeAll(section: { showSeeAll?: boolean }) {
   return Boolean(section.showSeeAll);
+}
+
+function getFirstFeaturedItem(items: CatalogItem[]) {
+  return (
+    items.find((item) => getCatalogBackdropUrl(item) || getCatalogPosterUrl(item)) ||
+    items[0] ||
+    null
+  );
 }
 
 export function CatalogPage() {
@@ -55,6 +69,19 @@ export function CatalogPage() {
     () => resolvedCatalogSections.slice(0, visibleSectionCount),
     [resolvedCatalogSections, visibleSectionCount],
   );
+  const featuredSection = useMemo(
+    () => resolvedCatalogSections.find((section) => section.items.length > 0) ?? null,
+    [resolvedCatalogSections],
+  );
+  const featuredItem = useMemo(
+    () => (featuredSection ? getFirstFeaturedItem(featuredSection.items) : null),
+    [featuredSection],
+  );
+  const totalVisibleItems = useMemo(
+    () =>
+      visibleCatalogSections.reduce((total, section) => total + section.items.length, 0),
+    [visibleCatalogSections],
+  );
 
   const isProgressiveLoading =
     isTv && visibleSectionCount < resolvedCatalogSections.length;
@@ -77,6 +104,30 @@ export function CatalogPage() {
     >
       <section className="mx-auto w-full max-w-[1680px]">
         <CatalogHero
+          title={featuredItem?.title}
+          description={featuredSection?.description}
+          overview={featuredItem ? getCatalogOverview(featuredItem) : undefined}
+          posterUrl={featuredItem ? getCatalogPosterUrl(featuredItem) : undefined}
+          backdropUrl={featuredItem ? getCatalogBackdropUrl(featuredItem) : undefined}
+          year={featuredItem?.year}
+          rating={featuredItem?.rating}
+          genres={featuredItem?.genres}
+          mediaType={featuredItem?.mediaType}
+          eyebrow={featuredSection?.eyebrow || 'Inicio'}
+          stats={[
+            {
+              label: 'Secoes',
+              value: String(visibleCatalogSections.length),
+            },
+            {
+              label: 'Titulos',
+              value: String(totalVisibleItems),
+            },
+            {
+              label: 'Experiencia',
+              value: isTv ? 'TV pronta' : 'Navegacao fluida',
+            },
+          ]}
           onSectionArrowPress={spatialNavigation.handleHeroSectionArrowPress}
           onPlayArrowPress={spatialNavigation.handleHeroPlayArrowPress}
           onInfoArrowPress={spatialNavigation.handleHeroInfoArrowPress}
@@ -84,11 +135,10 @@ export function CatalogPage() {
 
         <div className="mb-6 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 md:px-5">
           <p className="text-[0.68rem] font-black uppercase tracking-[0.26em] text-zinc-300">
-            Home premium base
+            Catalogo premium
           </p>
           <p className="mt-1 text-sm text-zinc-400">
-            Conteudo organizado para leitura a distancia e navegacao previsivel
-            por controle remoto.
+            Vitrine com imagens, metadados e destaque visual para leitura a distancia.
           </p>
         </div>
 
@@ -181,8 +231,12 @@ export function CatalogPage() {
                       <MediaCard
                         key={item.id}
                         title={item.title}
-                        subtitle={item.subtitle}
-                        posterUrl={item.posterUrl}
+                        subtitle={item.subtitle || getCatalogOverview(item)}
+                        posterUrl={getCatalogPosterUrl(item)}
+                        year={item.year}
+                        rating={item.rating}
+                        genres={item.genres}
+                        mediaType={item.mediaType}
                         index={itemIndex}
                         focusKey={getCategoryItemFocusKey(section.id, itemIndex)}
                         onEnterPress={() => {
