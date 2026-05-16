@@ -367,6 +367,18 @@ export function AdminClientsPage() {
           </p>
         </div>
 
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+          <p className="text-sm font-bold uppercase tracking-[0.2em] text-xf-muted">
+            Fluxo operacional sugerido
+          </p>
+          <p className="mt-3 max-w-4xl text-sm text-xf-muted">
+            Cadastre o cliente, vincule seus dispositivos e gerencie a licença
+            com telas simultâneas na área de Licenças. Dispositivos cadastrados
+            funcionam como inventário/vínculo; o limite principal de consumo é
+            definido pelas telas simultâneas da licença.
+          </p>
+        </div>
+
         <form
           onSubmit={handleSubmit}
           className="rounded-2xl border border-white/10 bg-white/5 p-6"
@@ -382,6 +394,35 @@ export function AdminClientsPage() {
               A lista não é global. Ela será vinculada ao cliente e entregue
               somente ao dispositivo cujo ID permanente foi informado.
             </p>
+          </div>
+
+          <div className="mt-5 grid gap-4 md:grid-cols-3">
+            <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-xf-muted">
+                Cliente
+              </p>
+              <p className="mt-2 text-sm text-xf-muted">
+                Dados cadastrais, contato, status e vencimento administrativo.
+              </p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-xf-muted">
+                Dispositivo inicial
+              </p>
+              <p className="mt-2 text-sm text-xf-muted">
+                O dispositivo informado aqui cria o primeiro vínculo operacional do
+                cliente.
+              </p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-xf-muted">
+                Lista IPTV
+              </p>
+              <p className="mt-2 text-sm text-xf-muted">
+                A fonte informada aqui cria a lista inicial; licença e telas
+                simultâneas seguem na área de Licenças.
+              </p>
+            </div>
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -685,6 +726,10 @@ export function AdminClientsPage() {
                       </td>
                       <td className="px-5 py-4 text-xf-muted">
                         {formatDate(client.expires_at)}
+                        <p className="mt-1 text-xs text-xf-muted">
+                          Vínculos e telas são acompanhados nas áreas de
+                          Dispositivos e Licenças.
+                        </p>
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex flex-wrap gap-2">
