@@ -812,6 +812,9 @@ export function AdminLicensesPage() {
 
           <label className="flex flex-col gap-2">
             <span className="text-sm font-bold text-white">Dispositivos</span>
+            <span className="text-xs text-xf-muted">
+              Inventário/vínculo de aparelhos; não é o limite principal de consumo.
+            </span>
             <input
               type="number"
               min={1}
@@ -822,7 +825,12 @@ export function AdminLicensesPage() {
           </label>
 
           <label className="flex flex-col gap-2">
-            <span className="text-sm font-bold text-white">Telas simultâneas</span>
+            <span className="text-sm font-bold text-white">
+              Telas simultâneas permitidas
+            </span>
+            <span className="text-xs text-xf-muted">
+              Limite operacional principal de reprodução da licença.
+            </span>
             <input
               type="number"
               min={1}
@@ -1506,6 +1514,9 @@ export function AdminLicensesPage() {
 
                   <label className="flex flex-col gap-2">
                     <span className="text-sm font-bold text-white">Dispositivos</span>
+                    <span className="text-xs text-xf-muted">
+                      Inventário/vínculo de aparelhos; não é o limite principal.
+                    </span>
                     <input
                       type="number"
                       min={1}
@@ -1516,7 +1527,12 @@ export function AdminLicensesPage() {
                   </label>
 
                   <label className="flex flex-col gap-2">
-                    <span className="text-sm font-bold text-white">Telas simultâneas</span>
+                    <span className="text-sm font-bold text-white">
+                      Telas simultâneas permitidas
+                    </span>
+                    <span className="text-xs text-xf-muted">
+                      Limite operacional principal de reprodução da licença.
+                    </span>
                     <input
                       type="number"
                       min={1}
