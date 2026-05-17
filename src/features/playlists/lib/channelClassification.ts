@@ -48,6 +48,12 @@ const LIVE_GROUP_TERMS = [
   'rádio',
 ];
 
+const LINEAR_CHANNEL_NAME_PATTERN =
+  /^(a&e|amc|animal planet|arte 1|axn|band|bis|canal brasil|cartoon|cinemax|cnn|combate|discovery|disney|espn|fox|fx|gloob|globo|hbo|max|megapix|mtv|multishow|nat geo|nick|paramount|premiere|record|sony|space|sportv|star|syfy|telecine|tnt|tooncast|universal|warner)(\s|$)/i;
+
+const LINEAR_QUALITY_SUFFIX_PATTERN =
+  /\b(sd|hd|fhd|uhd|4k|h265|hevc)\b/i;
+
 const SERIES_NAME_PATTERNS = [
   /\bs\d{1,2}\s*e\d{1,3}\b/i,
   /\b\d{1,2}x\d{1,3}\b/i,
@@ -69,6 +75,30 @@ function includesAnyTerm(value: string, terms: string[]) {
   return terms.some((term) => value.includes(normalizeText(term)));
 }
 
+export function isLikelyLinearChannel(
+  channel: Pick<IptvChannel, 'name' | 'groupTitle'>,
+) {
+  const normalizedName = normalizeText(channel.name);
+  const normalizedGroup = normalizeText(channel.groupTitle);
+
+  if (!normalizedName) {
+    return false;
+  }
+
+  if (LINEAR_CHANNEL_NAME_PATTERN.test(normalizedName)) {
+    return true;
+  }
+
+  if (
+    includesAnyTerm(normalizedGroup, LIVE_GROUP_TERMS) &&
+    LINEAR_QUALITY_SUFFIX_PATTERN.test(normalizedName)
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 export function getChannelDisplayGroup(channel: IptvChannel) {
   const groupTitle = channel.groupTitle?.trim();
 
@@ -86,6 +116,10 @@ export function classifyChannelContent(channel: IptvChannel): ChannelContentKind
 
   if (!combinedText) {
     return 'unknown';
+  }
+
+  if (isLikelyLinearChannel(channel)) {
+    return 'live';
   }
 
   if (includesAnyTerm(normalizedGroup, SERIES_GROUP_TERMS)) {

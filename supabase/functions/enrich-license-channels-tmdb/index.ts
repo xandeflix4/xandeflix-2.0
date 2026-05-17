@@ -99,6 +99,28 @@ function normalizeText(value?: string | null) {
   return normalized ? normalized : null;
 }
 
+function isLikelyLinearChannel(channel: Pick<ChannelRecord, 'name' | 'group_title'>) {
+  const normalizedName = channel.name.trim().toLowerCase();
+  const normalizedGroup = (channel.group_title ?? '').trim().toLowerCase();
+
+  if (!normalizedName) {
+    return false;
+  }
+
+  if (LINEAR_CHANNEL_NAME_PATTERN.test(normalizedName)) {
+    return true;
+  }
+
+  if (
+    normalizedGroup.includes('canais') &&
+    LINEAR_QUALITY_SUFFIX_PATTERN.test(normalizedName)
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 function normalizeSearchTitle(value: string) {
   return value
     .replace(/\[[^\]]+\]/g, ' ')
