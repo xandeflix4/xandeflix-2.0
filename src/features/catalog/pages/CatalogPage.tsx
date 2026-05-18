@@ -283,6 +283,7 @@ export function CatalogPage() {
                         title={item.title}
                         subtitle={item.subtitle}
                         posterUrl={item.posterUrl}
+                        eagerLoad={isTv && categoryIndex < 2 && itemIndex < 6}
                         index={itemIndex}
                         focusKey={getCategoryItemFocusKey(section.id, itemIndex)}
                         onEnterPress={() => {

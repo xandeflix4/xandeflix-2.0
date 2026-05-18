@@ -7,6 +7,7 @@ interface FocusableMediaCardProps {
   title: string;
   subtitle?: string;
   posterUrl?: string;
+  eagerLoad?: boolean;
   focusKey: string;
   onEnterPress?: () => void;
   onArrowPress?: (direction: string) => boolean;
@@ -38,6 +39,7 @@ export function FocusableMediaCard({
   title,
   subtitle,
   posterUrl,
+  eagerLoad = false,
   focusKey,
   onEnterPress,
   onArrowPress,
@@ -86,8 +88,9 @@ export function FocusableMediaCard({
           src={posterUrl}
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
-          loading="lazy"
+          loading={eagerLoad ? 'eager' : 'lazy'}
           decoding="async"
+          fetchPriority={eagerLoad ? 'high' : 'auto'}
           onError={() => setHasPosterError(true)}
         />
       ) : (

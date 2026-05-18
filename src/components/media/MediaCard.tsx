@@ -4,6 +4,7 @@ interface MediaCardProps {
   title: string;
   subtitle?: string;
   posterUrl?: string;
+  eagerLoad?: boolean;
   index: number;
   focusKey?: string;
   onEnterPress?: () => void;
@@ -14,6 +15,7 @@ export function MediaCard({
   title,
   subtitle,
   posterUrl,
+  eagerLoad = false,
   index,
   focusKey,
   onEnterPress,
@@ -24,6 +26,7 @@ export function MediaCard({
       title={title}
       subtitle={subtitle}
       posterUrl={posterUrl}
+      eagerLoad={eagerLoad}
       focusKey={focusKey ?? `media-card-${index + 1}`}
       onEnterPress={onEnterPress}
       onArrowPress={onArrowPress}
