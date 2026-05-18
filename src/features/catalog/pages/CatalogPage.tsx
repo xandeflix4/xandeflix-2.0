@@ -35,6 +35,19 @@ function shouldShowSeeAll(section: { showSeeAll?: boolean }) {
   return Boolean(section.showSeeAll);
 }
 
+function isFireStickUserAgent() {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  return (
+    userAgent.includes('aft') ||
+    userAgent.includes('fire tv') ||
+    userAgent.includes('firetv')
+  );
+}
+
 function mapHomeVodSectionsToCatalogSections(
   sections: HomeVodSection[],
 ): CatalogPageSection[] {
@@ -59,7 +72,7 @@ export function CatalogPage() {
   const [realCatalogSections, setRealCatalogSections] = useState<
     CatalogPageSection[] | null
   >(null);
-  const [isRealCatalogLoading, setIsRealCatalogLoading] = useState(true);
+  const [, setIsRealCatalogLoading] = useState(true);
 
   const resolvedCatalogSections = realCatalogSections?.length
     ? realCatalogSections
@@ -147,13 +160,16 @@ export function CatalogPage() {
 
   const isProgressiveLoading =
     isTv && visibleSectionCount < resolvedCatalogSections.length;
+  const isCompactFireStickHero = useMemo(
+    () => isTv && isFireStickUserAgent(),
+    [isTv],
+  );
 
   useRouteInitialFocus();
 
   const spatialNavigation = useCatalogGridNavigation({
     sections: resolvedCatalogSections,
   });
-
   return (
     <AppShell
       onSignOut={() => void signOut()}
@@ -162,29 +178,16 @@ export function CatalogPage() {
         onProfileArrowPress: spatialNavigation.handleHeaderProfileArrowPress,
         onLogoutArrowPress: spatialNavigation.handleHeaderLogoutArrowPress,
       }}
-      mainClassName="px-4 pb-28 md:px-8 md:pb-10 lg:px-10"
+      mainClassName="xf-tv-safe-main px-3 pb-24 md:px-7 md:pb-9 lg:px-8 xl:px-10"
     >
-      <section className="mx-auto w-full max-w-[1680px]">
+      <section className="mx-auto w-full max-w-[1920px]">
+
         <CatalogHero
           onSectionArrowPress={spatialNavigation.handleHeroSectionArrowPress}
           onPlayArrowPress={spatialNavigation.handleHeroPlayArrowPress}
           onInfoArrowPress={spatialNavigation.handleHeroInfoArrowPress}
+          isCompactTvHero={isCompactFireStickHero}
         />
-
-        <div className="mb-6 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 md:px-5">
-          <p className="text-[0.68rem] font-black uppercase tracking-[0.26em] text-zinc-300">
-            {realCatalogSections?.length
-              ? 'Home premium real'
-              : 'Home premium base'}
-          </p>
-          <p className="mt-1 text-sm text-zinc-400">
-            {isRealCatalogLoading
-              ? 'Carregando conteúdos autorizados da sua licença...'
-              : realCatalogSections?.length
-                ? 'Conteúdos reais autorizados para esta licença, preparados para navegação por controle remoto.'
-                : 'Conteúdo organizado para leitura a distância e navegação previsível por controle remoto.'}
-          </p>
-        </div>
 
         {visibleCatalogSections.length === 0 ? (
           <section className="rounded-2xl border border-white/10 bg-black/40 px-6 py-10 text-center">
@@ -212,12 +215,15 @@ export function CatalogPage() {
                     ? 'TV mode'
                     : 'Web'
                 : section.eyebrow;
+            const shouldShowSectionEyebrow =
+              Boolean(sectionEyebrow) &&
+              sectionEyebrow.toLowerCase() !== 'vod autorizado';
 
             return (
               <FocusableSection
                 key={section.id}
                 focusKey={getCategorySectionFocusKey(section.id)}
-                className="mb-8 border-0 bg-transparent px-0 py-0"
+                className="mb-6 border-0 bg-transparent px-0 py-0"
                 onArrowPress={(direction) =>
                   spatialNavigation.handleCategorySectionArrowPress(
                     direction,
@@ -225,29 +231,24 @@ export function CatalogPage() {
                   )
                 }
               >
-                <div className="mb-3 flex items-end justify-between gap-4 px-1">
+                <div className="mb-2 flex items-end justify-between gap-4 px-0.5">
                   <div className="min-w-0">
-                    <p className="text-[0.68rem] font-black uppercase tracking-[0.32em] text-xf-red">
-                      {sectionEyebrow}
-                    </p>
+                    {shouldShowSectionEyebrow ? (
+                      <p
+                        data-xf-home-section-eyebrow="true"
+                        className="text-[0.68rem] font-black uppercase tracking-[0.32em] text-xf-red"
+                      >
+                        {sectionEyebrow}
+                      </p>
+                    ) : null}
 
-                    <h2 className="mt-2 text-2xl font-black text-white md:text-4xl">
+                    <h2
+                      data-xf-home-section-title="true"
+                      className={`${shouldShowSectionEyebrow ? 'mt-2 ' : ''}text-[1.05rem] font-black tracking-[-0.02em] text-white md:text-[1.55rem] lg:text-[1.7rem]`}
+                    >
                       {section.title}
                     </h2>
 
-                    <p className="mt-2 max-w-3xl text-sm text-zinc-400">
-                      {section.description ||
-                        'Selecao pronta para navegacao rapida na tela principal.'}
-                    </p>
-                  </div>
-
-                  <div className="hidden rounded-xl border border-white/15 bg-white/5 px-3 py-2 md:block">
-                    <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-zinc-400">
-                      Itens visiveis
-                    </p>
-                    <p className="text-lg font-black text-white">
-                      {sectionItems.length}
-                    </p>
                   </div>
 
                   {shouldShowSeeAll(section) && !isMobile && !isTv && (
@@ -270,7 +271,7 @@ export function CatalogPage() {
                 </div>
 
                 {sectionItems.length > 0 ? (
-                  <div className="xf-carousel-row flex gap-2.5 overflow-x-auto overflow-y-visible pb-7 pr-10 scroll-smooth md:gap-3 lg:gap-3.5">
+                  <div className="xf-carousel-row flex gap-2 overflow-x-auto overflow-y-visible pb-6 pr-10 scroll-auto md:gap-2.5 lg:gap-3">
                     {sectionItems.map((item, itemIndex) => (
                       <MediaCard
                         key={item.id}
@@ -315,7 +316,7 @@ export function CatalogPage() {
                 (_, placeholderIndex) => (
                   <div
                     key={`catalog-loading-card-${placeholderIndex}`}
-                    className="h-[16rem] w-[11rem] shrink-0 animate-pulse rounded-2xl border border-white/10 bg-white/5"
+                    className="h-[14.5rem] w-[9.7rem] shrink-0 animate-pulse rounded-md border border-white/10 bg-white/5"
                   />
                 ),
               )}

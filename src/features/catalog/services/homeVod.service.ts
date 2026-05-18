@@ -85,6 +85,14 @@ function createSubtitle(channel: IptvChannel) {
   return metadata.length > 0 ? metadata.join(' • ') : channel.groupTitle;
 }
 
+function hasRenderableTmdbPoster(channel: IptvChannel) {
+  return Boolean(
+    channel.tmdbMatchStatus === 'matched' &&
+      channel.tmdbPosterPath &&
+      channel.tmdbTitle
+  );
+}
+
 function mapChannelToHomeVodItem(channel: IptvChannel): HomeVodItem {
   const kind = inferVodKind(channel);
 
@@ -140,7 +148,10 @@ export async function loadHomeVodSections({
     deviceIdentifier,
   });
 
-  const vodItems = channels.filter(isVodChannel).map(mapChannelToHomeVodItem);
+  const vodItems = channels
+    .filter(isVodChannel)
+    .filter(hasRenderableTmdbPoster)
+    .map(mapChannelToHomeVodItem);
 
   const movieItems = vodItems.filter((item) => item.kind === 'movie');
   const seriesItems = vodItems.filter((item) => item.kind === 'series');
@@ -150,7 +161,7 @@ export async function loadHomeVodSections({
     createSection({
       id: 'home-vod-movies',
       title: 'Filmes da sua lista',
-      eyebrow: 'VOD autorizado',
+      eyebrow: '',
       description: 'Conteúdos de filme liberados para esta licença.',
       items: movieItems,
       limit: limitPerSection,
@@ -158,7 +169,7 @@ export async function loadHomeVodSections({
     createSection({
       id: 'home-vod-series',
       title: 'Séries da sua lista',
-      eyebrow: 'VOD autorizado',
+      eyebrow: '',
       description: 'Séries liberadas para esta licença.',
       items: seriesItems,
       limit: limitPerSection,
@@ -166,7 +177,7 @@ export async function loadHomeVodSections({
     createSection({
       id: 'home-vod-other',
       title: 'Outros conteúdos VOD',
-      eyebrow: 'VOD autorizado',
+      eyebrow: '',
       description: 'Conteúdos sob demanda ainda sem categoria final.',
       items: unknownVodItems,
       limit: limitPerSection,
