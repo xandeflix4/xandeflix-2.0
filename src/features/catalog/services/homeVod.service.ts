@@ -157,15 +157,32 @@ export async function loadHomeVodSections({
   const seriesItems = vodItems.filter((item) => item.kind === 'series');
   const unknownVodItems = vodItems.filter((item) => item.kind === 'unknown');
 
-  return [
-    createSection({
-      id: 'home-vod-movies',
-      title: 'Filmes da sua lista',
+  const movieSections: HomeVodSection[] = [];
+
+  for (let index = 0; index < movieItems.length; index += limitPerSection) {
+    const railIndex = Math.floor(index / limitPerSection);
+    const section = createSection({
+      id:
+        railIndex === 0
+          ? 'home-vod-movies'
+          : `home-vod-movies-${railIndex + 1}`,
+      title:
+        railIndex === 0
+          ? 'Filmes da sua lista'
+          : `Filmes da sua lista ${railIndex + 1}`,
       eyebrow: '',
       description: 'Conteúdos de filme liberados para esta licença.',
-      items: movieItems,
+      items: movieItems.slice(index, index + limitPerSection),
       limit: limitPerSection,
-    }),
+    });
+
+    if (section) {
+      movieSections.push(section);
+    }
+  }
+
+  return [
+    ...movieSections,
     createSection({
       id: 'home-vod-series',
       title: 'Séries da sua lista',
