@@ -62,6 +62,8 @@ function mapHomeVodSectionsToCatalogSections(
       title: item.title,
       subtitle: item.subtitle,
       posterUrl: item.posterUrl,
+      backdropUrl: item.backdropUrl,
+      overview: item.overview,
     })),
   }));
 }
@@ -73,6 +75,7 @@ export function CatalogPage() {
     CatalogPageSection[] | null
   >(null);
   const [, setIsRealCatalogLoading] = useState(true);
+  const [activeHeroIndex, setActiveHeroIndex] = useState(0);
 
   const resolvedCatalogSections = realCatalogSections?.length
     ? realCatalogSections
@@ -165,6 +168,68 @@ export function CatalogPage() {
     [isTv],
   );
 
+  const heroItems = useMemo(() => {
+    const uniqueItems = new Map<string, CatalogPageSection['items'][number]>();
+
+    for (const section of resolvedCatalogSections) {
+      for (const item of section.items) {
+        if (!item.backdropUrl && !item.posterUrl) {
+          continue;
+        }
+
+        if (!uniqueItems.has(item.id)) {
+          uniqueItems.set(item.id, item);
+        }
+      }
+    }
+
+    return Array.from(uniqueItems.values())
+      .sort((firstItem, secondItem) => {
+        return Number(Boolean(secondItem.backdropUrl)) - Number(Boolean(firstItem.backdropUrl));
+      })
+      .slice(0, 5);
+  }, [resolvedCatalogSections]);
+
+  useEffect(() => {
+    setActiveHeroIndex(0);
+  }, [heroItems.length]);
+
+  useEffect(() => {
+    if (heroItems.length <= 1) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setActiveHeroIndex((currentIndex) => {
+        return (currentIndex + 1) % heroItems.length;
+      });
+    }, 9000);
+
+    return () => window.clearTimeout(timer);
+  }, [activeHeroIndex, heroItems.length]);
+
+  const heroItem = heroItems[activeHeroIndex] ?? null;
+
+  function handlePreviousHeroItem() {
+    if (heroItems.length <= 1) {
+      return;
+    }
+
+    setActiveHeroIndex((currentIndex) => {
+      return (currentIndex - 1 + heroItems.length) % heroItems.length;
+    });
+  }
+
+  function handleNextHeroItem() {
+    if (heroItems.length <= 1) {
+      return;
+    }
+
+    setActiveHeroIndex((currentIndex) => {
+      return (currentIndex + 1) % heroItems.length;
+    });
+  }
+
   useRouteInitialFocus();
 
   const spatialNavigation = useCatalogGridNavigation({
@@ -183,10 +248,25 @@ export function CatalogPage() {
       <section className="mx-auto w-full max-w-[1920px]">
 
         <CatalogHero
+          title={heroItem?.title}
+          description={
+            heroItem?.overview ??
+            heroItem?.subtitle ??
+            'Conteudos recomendados para sua licenca.'
+          }
+          posterUrl={heroItem?.backdropUrl ?? heroItem?.posterUrl}
           onSectionArrowPress={spatialNavigation.handleHeroSectionArrowPress}
           onPlayArrowPress={spatialNavigation.handleHeroPlayArrowPress}
           onInfoArrowPress={spatialNavigation.handleHeroInfoArrowPress}
           isCompactTvHero={isCompactFireStickHero}
+
+          heroIndex={activeHeroIndex}
+
+          heroTotal={heroItems.length}
+
+          onPreviousHeroItem={handlePreviousHeroItem}
+
+          onNextHeroItem={handleNextHeroItem}
         />
 
         {visibleCatalogSections.length === 0 ? (

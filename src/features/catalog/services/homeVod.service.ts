@@ -8,6 +8,7 @@ export type HomeVodItem = {
   id: string;
   title: string;
   subtitle?: string;
+  overview?: string;
   posterUrl?: string;
   backdropUrl?: string;
   streamUrl: string;
@@ -100,6 +101,7 @@ function mapChannelToHomeVodItem(channel: IptvChannel): HomeVodItem {
     id: channel.id,
     title: channel.tmdbTitle ?? channel.name,
     subtitle: createSubtitle(channel),
+    overview: channel.tmdbOverview ?? undefined,
     posterUrl: createTmdbImageUrl(channel.tmdbPosterPath, 'w342'),
     backdropUrl: createTmdbImageUrl(channel.tmdbBackdropPath, 'w780'),
     streamUrl: channel.url,
