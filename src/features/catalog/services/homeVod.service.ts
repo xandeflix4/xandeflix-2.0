@@ -32,7 +32,52 @@ export type LoadHomeVodInput = {
 };
 
 const DEFAULT_LIMIT_PER_SECTION = 20;
+const HOME_VOD_CACHE_TTL_MS = 5 * 60 * 1000;
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p';
+
+type HomeVodCacheEntry = {
+  createdAt: number;
+  sections: HomeVodSection[];
+};
+
+const homeVodSectionsCache = new Map<string, HomeVodCacheEntry>();
+
+function cloneHomeVodSections(sections: HomeVodSection[]) {
+  return sections.map((section) => ({
+    ...section,
+    items: section.items.map((item) => ({ ...item })),
+  }));
+}
+
+function createHomeVodCacheKey({
+  licenseCode,
+  deviceIdentifier,
+  limitPerSection = DEFAULT_LIMIT_PER_SECTION,
+  launchesLimit = 20,
+}: LoadHomeVodInput) {
+  return [
+    licenseCode,
+    deviceIdentifier,
+    limitPerSection,
+    launchesLimit,
+  ].join('::');
+}
+
+export function getCachedHomeVodSections(input: LoadHomeVodInput) {
+  const cacheKey = createHomeVodCacheKey(input);
+  const cachedEntry = homeVodSectionsCache.get(cacheKey);
+
+  if (!cachedEntry) {
+    return null;
+  }
+
+  if (Date.now() - cachedEntry.createdAt >= HOME_VOD_CACHE_TTL_MS) {
+    homeVodSectionsCache.delete(cacheKey);
+    return null;
+  }
+
+  return cloneHomeVodSections(cachedEntry.sections);
+}
 
 function createTmdbImageUrl(
   path: string | null | undefined,
@@ -181,6 +226,24 @@ export async function loadHomeVodSections({
   limitPerSection = DEFAULT_LIMIT_PER_SECTION,
   launchesLimit = 20,
 }: LoadHomeVodInput): Promise<HomeVodSection[]> {
+  const cachedSections = getCachedHomeVodSections({
+    licenseCode,
+    deviceIdentifier,
+    limitPerSection,
+    launchesLimit,
+  });
+
+  if (cachedSections) {
+    return cachedSections;
+  }
+
+  const cacheKey = createHomeVodCacheKey({
+    licenseCode,
+    deviceIdentifier,
+    limitPerSection,
+    launchesLimit,
+  });
+
   const channels = await listAuthorizedLicenseChannels({
     licenseCode,
     deviceIdentifier,
@@ -223,9 +286,7 @@ export async function loadHomeVodSections({
     if (section) {
       movieSections.push(section);
     }
-  }
-
-  return [
+  }  const sections = [
     createSection({
       id: 'home-vod-launches',
       title: 'Lançamentos',
@@ -252,4 +313,11 @@ export async function loadHomeVodSections({
       limit: limitPerSection,
     }),
   ].filter((section): section is HomeVodSection => Boolean(section));
+
+  homeVodSectionsCache.set(cacheKey, {
+    createdAt: Date.now(),
+    sections: cloneHomeVodSections(sections),
+  });
+
+  return sections;
 }

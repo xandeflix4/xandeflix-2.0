@@ -18,11 +18,12 @@ import {
 } from '../../../lib/spatial/categoryFocusKeys';
 import { spatialDebug } from '@/lib/spatial/spatialDebug';
 import { getStoredLicenseActivation } from '@/features/licensing/lib/licenseActivationStorage';
-import { getOrCreateDeviceIdentifier } from '@/features/playlists/lib/deviceIdentifier';
 
 import { catalogSections } from '../data/catalogSections';
 import {
+  getCachedHomeVodSections,
   loadHomeVodSections,
+  type LoadHomeVodInput,
   type HomeVodSection,
 } from '../services/homeVod.service';
 
@@ -70,22 +71,69 @@ function mapHomeVodSectionsToCatalogSections(
   }));
 }
 
+function getHomeVodLimitPerSection(isTv: boolean) {
+  return isTv ? 12 : 20;
+}
+
+function createHomeVodLoadInput(
+  limitPerSection: number,
+): LoadHomeVodInput | null {
+  const storedActivation = getStoredLicenseActivation();
+
+  if (!storedActivation) {
+    return null;
+  }
+
+  const licenseCode = storedActivation.licenseCode.trim();
+
+  return {
+    licenseCode,
+    deviceIdentifier: storedActivation.deviceIdentifier,
+    limitPerSection,
+  };
+}
+
+function createInitialHomeCatalogState(isTv: boolean) {
+  const limitPerSection = getHomeVodLimitPerSection(isTv);
+  const loadInput = createHomeVodLoadInput(limitPerSection);
+  const cachedSections = loadInput ? getCachedHomeVodSections(loadInput) : null;
+  const sections = cachedSections
+    ? mapHomeVodSectionsToCatalogSections(cachedSections)
+    : null;
+
+  return {
+    limitPerSection,
+    loadInput,
+    sections: sections?.length ? sections : null,
+    wasHydratedFromCache: Boolean(sections?.length),
+  };
+}
+
 export function CatalogPage() {
   const navigate = useNavigate();
   const { signOut } = useAuth();
   const { isTv, isMobile } = useDeviceType();
+  const [initialHomeCatalogState] = useState(() =>
+    createInitialHomeCatalogState(isTv),
+  );
   const [realCatalogSections, setRealCatalogSections] = useState<
     CatalogPageSection[] | null
-  >(null);
+  >(initialHomeCatalogState.sections);
   const [, setIsRealCatalogLoading] = useState(true);
   const [activeHeroIndex, setActiveHeroIndex] = useState(0);
+  const homeVodLimitPerSection = getHomeVodLimitPerSection(isTv);
+  const wasInitialCatalogHydratedFromCache =
+    initialHomeCatalogState.wasHydratedFromCache &&
+    initialHomeCatalogState.limitPerSection === homeVodLimitPerSection;
 
   const resolvedCatalogSections = realCatalogSections?.length
     ? realCatalogSections
     : catalogSections;
 
   const [visibleSectionCount, setVisibleSectionCount] = useState(
-    isTv ? INITIAL_TV_VISIBLE_SECTIONS : resolvedCatalogSections.length,
+    isTv && !wasInitialCatalogHydratedFromCache
+      ? INITIAL_TV_VISIBLE_SECTIONS
+      : resolvedCatalogSections.length,
   );
 
   useEffect(() => {
@@ -95,21 +143,19 @@ export function CatalogPage() {
       setIsRealCatalogLoading(true);
 
       try {
-        const storedActivation = getStoredLicenseActivation();
-        const licenseCode = storedActivation?.licenseCode?.trim();
+        const homeVodLoadInput =
+          initialHomeCatalogState.limitPerSection === homeVodLimitPerSection
+            ? initialHomeCatalogState.loadInput
+            : createHomeVodLoadInput(homeVodLimitPerSection);
 
-        if (!licenseCode) {
+        if (!homeVodLoadInput) {
           setRealCatalogSections(null);
           return;
         }
 
-        const deviceIdentifier =
-          storedActivation?.deviceIdentifier || getOrCreateDeviceIdentifier();
-
         const homeVodSections = await loadHomeVodSections({
-          licenseCode,
-          deviceIdentifier,
-          limitPerSection: isTv ? 12 : 20,
+          ...homeVodLoadInput,
+          limitPerSection: homeVodLimitPerSection,
         });
 
         if (!isMounted) {
@@ -142,10 +188,15 @@ export function CatalogPage() {
     return () => {
       isMounted = false;
     };
-  }, [isTv]);
+  }, [homeVodLimitPerSection, initialHomeCatalogState]);
 
   useEffect(() => {
     if (!isTv) {
+      setVisibleSectionCount(resolvedCatalogSections.length);
+      return;
+    }
+
+    if (wasInitialCatalogHydratedFromCache) {
       setVisibleSectionCount(resolvedCatalogSections.length);
       return;
     }
@@ -157,7 +208,11 @@ export function CatalogPage() {
     }, TV_REMAINING_SECTIONS_DELAY_MS);
 
     return () => window.clearTimeout(timer);
-  }, [isTv, resolvedCatalogSections.length]);
+  }, [
+    isTv,
+    resolvedCatalogSections.length,
+    wasInitialCatalogHydratedFromCache,
+  ]);
 
   const visibleCatalogSections = useMemo(
     () => resolvedCatalogSections.slice(0, visibleSectionCount),

@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { setFocus } from '@noriginmedia/norigin-spatial-navigation';
+import { useNavigate } from 'react-router-dom';
+import { App as CapacitorApp } from '@capacitor/app';
 
 import { useAuth } from '../../../app/providers/AuthProvider';
 import { AppShell } from '../../../components/layout/AppShell';
@@ -7,6 +9,7 @@ import { MediaCard } from '../../../components/media/MediaCard';
 import { getStoredLicenseActivation } from '@/features/licensing/lib/licenseActivationStorage';
 import { getOrCreateDeviceIdentifier } from '@/features/playlists/lib/deviceIdentifier';
 import { spatialDebug } from '@/lib/spatial/spatialDebug';
+import { FOCUS_KEYS } from '@/lib/spatial/focusKeys';
 
 import {
   loadHomeVodSections,
@@ -32,6 +35,7 @@ function getLaunchItems(
 
 export function CatalogLaunchesPage() {
   const { signOut } = useAuth();
+  const navigate = useNavigate();
   const [items, setItems] = useState<HomeVodItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -103,6 +107,39 @@ export function CatalogLaunchesPage() {
     return () => window.clearTimeout(timer);
   }, [visibleItems.length]);
 
+  useEffect(() => {
+    function goBackToHome() {
+      navigate('/');
+    }
+
+    function handleBackNavigation(event: KeyboardEvent) {
+      if (
+        event.key !== 'Backspace' &&
+        event.key !== 'Escape' &&
+        event.key !== 'BrowserBack'
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      goBackToHome();
+    }
+
+    window.addEventListener('keydown', handleBackNavigation);
+
+    const capacitorBackButtonListener = CapacitorApp.addListener(
+      'backButton',
+      () => {
+        goBackToHome();
+      },
+    );
+
+    return () => {
+      window.removeEventListener('keydown', handleBackNavigation);
+      void capacitorBackButtonListener.then((listener) => listener.remove());
+    };
+  }, [navigate]);
+
   function handleLaunchCardArrowPress(direction: string, index: number) {
     const isFirstColumn = index % GRID_COLUMNS === 0;
     const isLastColumn = index % GRID_COLUMNS === GRID_COLUMNS - 1;
@@ -111,6 +148,7 @@ export function CatalogLaunchesPage() {
 
     if (direction === 'left') {
       if (isFirstColumn) {
+        setFocus(FOCUS_KEYS.SIDEBAR_HOME);
         return false;
       }
 
